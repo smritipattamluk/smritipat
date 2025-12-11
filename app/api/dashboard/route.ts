@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/db';
 import { requireAuth } from '@/lib/auth-utils';
 import { startOfMonth, endOfMonth, addDays } from 'date-fns';
+import { Prisma } from '@prisma/client';
 
 // GET /api/dashboard - Get dashboard statistics
 export async function GET(request: NextRequest) {
@@ -47,10 +48,16 @@ export async function GET(request: NextRequest) {
 
     // Calculate earnings
     let totalEarnings = 0;
-    bookings.forEach((booking: any) => {
+
+    // Define type for booking with included relations
+    type BookingWithFinancials = Prisma.BookingGetPayload<{
+      include: { bookingCharges: true; payments: true }
+    }>;
+
+    bookings.forEach((booking: BookingWithFinancials) => {
       let bookingTotal = Number(booking.baseRent);
 
-      booking.bookingCharges.forEach((charge: any) => {
+      booking.bookingCharges.forEach((charge) => {
         bookingTotal += Number(charge.amount);
       });
 
@@ -71,7 +78,7 @@ export async function GET(request: NextRequest) {
       },
     });
 
-    const totalExpenses = expenses.reduce((sum: number, exp: any) => sum + Number(exp.amount), 0);
+    const totalExpenses = expenses.reduce((sum: number, exp) => sum + Number(exp.amount), 0);
 
     // Calculate net profit
     const netProfit = totalEarnings - totalExpenses;
@@ -94,12 +101,17 @@ export async function GET(request: NextRequest) {
 
     // Format booking stats
     const bookingsByStatus = bookingStats.reduce(
-      (acc: Record<string, number>, stat: any) => {
+      (acc: Record<string, number>, stat) => {
         acc[stat.status] = stat._count.id;
         return acc;
       },
       {} as Record<string, number>
     );
+
+    // Define type for upcoming booking map callback
+    type UpcomingBooking = Prisma.BookingGetPayload<{
+      include: { hall: { select: { name: true } } }
+    }>;
 
     return NextResponse.json({
       period: {
@@ -110,7 +122,7 @@ export async function GET(request: NextRequest) {
       expenses: totalExpenses,
       netProfit,
       bookingsByStatus,
-      upcomingBookings: upcomingBookings.map((booking: any) => ({
+      upcomingBookings: upcomingBookings.map((booking: UpcomingBooking) => ({
         id: booking.id,
         customerName: booking.customerName,
         eventDate: booking.eventDate,

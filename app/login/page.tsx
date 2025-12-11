@@ -80,10 +80,7 @@ export default function LoginPage() {
               {isLoading ? 'Signing in...' : 'Sign In'}
             </Button>
 
-            <div className="text-xs text-muted-foreground text-center mt-4">
-              <p>Default credentials:</p>
-              <p className="font-mono mt-1">admin@smritipat.com / Admin@123</p>
-            </div>
+            {/* Demo credentials removed for production */}
           </form>
         </CardContent>
       </Card>
