@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { signOut, useSession } from 'next-auth/react';
 import {
   LayoutDashboard,
@@ -28,7 +28,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { KeyboardShortcuts } from '@/components/keyboard-shortcuts';
 import { QuickActionButton } from '@/components/quick-action-button';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 const navigation = [
   { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard, roles: ['ADMIN', 'MANAGER', 'ACCOUNTANT', 'VIEWER'] },
@@ -44,8 +44,33 @@ const navigation = [
 
 export default function ProtectedLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  const { data: session } = useSession();
+  const router = useRouter();
+  const { data: session, status } = useSession();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+
+  // Redirect to login if not authenticated
+  useEffect(() => {
+    if (status === 'unauthenticated') {
+      router.push('/login');
+    }
+  }, [status, router]);
+
+  // Show loading state while checking authentication
+  if (status === 'loading') {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
+          <p className="mt-4 text-gray-600">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Don't render if not authenticated
+  if (!session) {
+    return null;
+  }
 
   const userRole = session?.user?.role || 'VIEWER';
   const filteredNavigation = navigation.filter((item) => item.roles.includes(userRole));
@@ -90,9 +115,8 @@ export default function ProtectedLayout({ children }: { children: React.ReactNod
       )}
 
       {/* Sidebar */}
-      <aside className={`fixed inset-y-0 left-0 z-50 w-64 bg-white border-r border-gray-200 transform transition-transform duration-200 ease-in-out lg:translate-x-0 ${
-        sidebarOpen ? 'translate-x-0' : '-translate-x-full'
-      }`}>
+      <aside className={`fixed inset-y-0 left-0 z-50 w-64 bg-white border-r border-gray-200 transform transition-transform duration-200 ease-in-out lg:translate-x-0 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'
+        }`}>
         <div className="flex flex-col h-full">
           {/* Logo */}
           <div className="flex items-center justify-between h-16 px-6 border-b border-gray-200">
@@ -121,11 +145,10 @@ export default function ProtectedLayout({ children }: { children: React.ReactNod
                   key={item.name}
                   href={item.href}
                   onClick={() => setSidebarOpen(false)}
-                  className={`flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-lg transition-colors ${
-                    isActive
+                  className={`flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-lg transition-colors ${isActive
                       ? 'bg-blue-50 text-blue-700'
                       : 'text-gray-700 hover:bg-gray-100'
-                  }`}
+                    }`}
                 >
                   <Icon className="w-5 h-5" />
                   {item.name}
