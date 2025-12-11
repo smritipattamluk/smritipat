@@ -5,8 +5,9 @@ import { useQuery } from '@tanstack/react-query';
 import { format, startOfMonth, endOfMonth } from 'date-fns';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
 import ProtectedLayout from '@/components/layout/protected-layout';
-import { Download, FileSpreadsheet } from 'lucide-react';
+import { Download, FileSpreadsheet, ChevronDown, ChevronUp, TrendingUp, TrendingDown, DollarSign, Calendar, Users, Building2 } from 'lucide-react';
 import jsPDF from 'jspdf';
 // @ts-ignore
 import autoTable from 'jspdf-autotable';
@@ -15,6 +16,17 @@ import * as XLSX from 'xlsx';
 export default function ReportsPage() {
   const [startDate, setStartDate] = useState(format(startOfMonth(new Date()), 'yyyy-MM-dd'));
   const [endDate, setEndDate] = useState(format(endOfMonth(new Date()), 'yyyy-MM-dd'));
+  const [showDetailedReport, setShowDetailedReport] = useState(false);
+  const [expandedSections, setExpandedSections] = useState({
+    bookings: false,
+    payments: false,
+    expenses: false,
+    halls: false,
+  });
+
+  const toggleSection = (section: keyof typeof expandedSections) => {
+    setExpandedSections(prev => ({ ...prev, [section]: !prev[section] }));
+  };
 
   const { data, isLoading, refetch } = useQuery({
     queryKey: ['reports', startDate, endDate],
@@ -261,6 +273,438 @@ export default function ReportsPage() {
                 </p>
               </CardContent>
             </Card>
+
+            {/* Toggle Detailed Report */}
+            <div className="flex justify-center">
+              <Button
+                variant="outline"
+                onClick={() => setShowDetailedReport(!showDetailedReport)}
+                className="w-full lg:w-auto"
+              >
+                {showDetailedReport ? (
+                  <>
+                    <ChevronUp className="h-4 w-4 mr-2" />
+                    Hide Detailed Report
+                  </>
+                ) : (
+                  <>
+                    <ChevronDown className="h-4 w-4 mr-2" />
+                    Show Detailed Report
+                  </>
+                )}
+              </Button>
+            </div>
+
+            {/* Detailed Report Section */}
+            {showDetailedReport && (
+              <div className="space-y-6 border-t pt-6">
+                <div>
+                  <h2 className="text-2xl font-bold mb-4">Detailed Financial Report</h2>
+                  <p className="text-muted-foreground">
+                    Comprehensive breakdown of all transactions and financial activities
+                  </p>
+                </div>
+
+                {/* Revenue Breakdown */}
+                <Card>
+                  <CardHeader 
+                    className="cursor-pointer hover:bg-gray-50 transition-colors"
+                    onClick={() => toggleSection('payments')}
+                  >
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <DollarSign className="h-5 w-5 text-green-600" />
+                        <CardTitle>Revenue Breakdown</CardTitle>
+                      </div>
+                      {expandedSections.payments ? (
+                        <ChevronUp className="h-5 w-5" />
+                      ) : (
+                        <ChevronDown className="h-5 w-5" />
+                      )}
+                    </div>
+                  </CardHeader>
+                  {expandedSections.payments && (
+                    <CardContent className="space-y-4">
+                      <div className="grid gap-4 md:grid-cols-2">
+                        <div className="p-4 border rounded-lg">
+                          <div className="flex items-center justify-between mb-2">
+                            <span className="text-sm text-muted-foreground">Total Revenue</span>
+                            <TrendingUp className="h-4 w-4 text-green-600" />
+                          </div>
+                          <p className="text-2xl font-bold text-green-600">
+                            {formatCurrency(data.earnings.totalRevenue)}
+                          </p>
+                          <p className="text-xs text-muted-foreground mt-1">
+                            Gross income before refunds
+                          </p>
+                        </div>
+
+                        <div className="p-4 border rounded-lg">
+                          <div className="flex items-center justify-between mb-2">
+                            <span className="text-sm text-muted-foreground">Net Earnings</span>
+                            <TrendingUp className="h-4 w-4 text-blue-600" />
+                          </div>
+                          <p className="text-2xl font-bold text-blue-600">
+                            {formatCurrency(data.earnings.netEarnings)}
+                          </p>
+                          <p className="text-xs text-muted-foreground mt-1">
+                            After refunds
+                          </p>
+                        </div>
+                      </div>
+
+                      <div className="space-y-3">
+                        <h4 className="font-semibold text-sm">Payment Breakdown</h4>
+                        
+                        <div className="flex items-center justify-between p-3 border rounded-lg">
+                          <div className="flex items-center gap-2">
+                            <Badge variant="secondary" className="bg-blue-100 text-blue-800">
+                              Advance
+                            </Badge>
+                            <span className="text-sm">Advance Payments</span>
+                          </div>
+                          <span className="font-semibold">
+                            {formatCurrency(data.earnings.advancePayments)}
+                          </span>
+                        </div>
+
+                        <div className="flex items-center justify-between p-3 border rounded-lg">
+                          <div className="flex items-center gap-2">
+                            <Badge variant="secondary" className="bg-yellow-100 text-yellow-800">
+                              Partial
+                            </Badge>
+                            <span className="text-sm">Partial Payments</span>
+                          </div>
+                          <span className="font-semibold">
+                            {formatCurrency(data.earnings.partialPayments)}
+                          </span>
+                        </div>
+
+                        <div className="flex items-center justify-between p-3 border rounded-lg">
+                          <div className="flex items-center gap-2">
+                            <Badge variant="secondary" className="bg-green-100 text-green-800">
+                              Full
+                            </Badge>
+                            <span className="text-sm">Full Payments</span>
+                          </div>
+                          <span className="font-semibold">
+                            {formatCurrency(data.earnings.fullPayments)}
+                          </span>
+                        </div>
+
+                        <div className="flex items-center justify-between p-3 border rounded-lg bg-red-50">
+                          <div className="flex items-center gap-2">
+                            <Badge variant="secondary" className="bg-red-100 text-red-800">
+                              Refunds
+                            </Badge>
+                            <span className="text-sm">Total Refunds</span>
+                          </div>
+                          <span className="font-semibold text-red-600">
+                            -{formatCurrency(data.earnings.refunds)}
+                          </span>
+                        </div>
+                      </div>
+
+                      <div className="pt-3 border-t">
+                        <div className="flex items-center justify-between">
+                          <span className="font-semibold">Net Revenue</span>
+                          <span className="text-xl font-bold text-green-600">
+                            {formatCurrency(data.earnings.netEarnings)}
+                          </span>
+                        </div>
+                      </div>
+                    </CardContent>
+                  )}
+                </Card>
+
+                {/* Expenses Breakdown */}
+                <Card>
+                  <CardHeader 
+                    className="cursor-pointer hover:bg-gray-50 transition-colors"
+                    onClick={() => toggleSection('expenses')}
+                  >
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <TrendingDown className="h-5 w-5 text-red-600" />
+                        <CardTitle>Expenses Breakdown</CardTitle>
+                      </div>
+                      {expandedSections.expenses ? (
+                        <ChevronUp className="h-5 w-5" />
+                      ) : (
+                        <ChevronDown className="h-5 w-5" />
+                      )}
+                    </div>
+                  </CardHeader>
+                  {expandedSections.expenses && (
+                    <CardContent className="space-y-4">
+                      <div className="p-4 border rounded-lg bg-red-50">
+                        <div className="flex items-center justify-between mb-2">
+                          <span className="text-sm text-muted-foreground">Total Expenses</span>
+                          <TrendingDown className="h-4 w-4 text-red-600" />
+                        </div>
+                        <p className="text-2xl font-bold text-red-600">
+                          {formatCurrency(data.expenses.total)}
+                        </p>
+                        <p className="text-xs text-muted-foreground mt-1">
+                          All operating costs
+                        </p>
+                      </div>
+
+                      {data.expenses.byCategory && Object.keys(data.expenses.byCategory).length > 0 ? (
+                        <div className="space-y-3">
+                          <h4 className="font-semibold text-sm">Expenses by Category</h4>
+                          
+                          {Object.entries(data.expenses.byCategory)
+                            .sort(([, a], [, b]) => (b as number) - (a as number))
+                            .map(([category, amount]) => {
+                              const percentage = ((amount as number) / data.expenses.total * 100).toFixed(1);
+                              return (
+                                <div key={category} className="space-y-2">
+                                  <div className="flex items-center justify-between">
+                                    <div className="flex items-center gap-2">
+                                      <Badge variant="outline">{category}</Badge>
+                                      <span className="text-sm text-muted-foreground">
+                                        {percentage}%
+                                      </span>
+                                    </div>
+                                    <span className="font-semibold">
+                                      {formatCurrency(amount as number)}
+                                    </span>
+                                  </div>
+                                  <div className="w-full bg-gray-200 rounded-full h-2">
+                                    <div
+                                      className="bg-red-500 h-2 rounded-full transition-all"
+                                      style={{ width: `${percentage}%` }}
+                                    />
+                                  </div>
+                                </div>
+                              );
+                            })}
+                        </div>
+                      ) : (
+                        <p className="text-sm text-muted-foreground text-center py-4">
+                          No expenses recorded for this period
+                        </p>
+                      )}
+                    </CardContent>
+                  )}
+                </Card>
+
+                {/* Bookings Details */}
+                {data.bookings && data.bookings.length > 0 && (
+                  <Card>
+                    <CardHeader 
+                      className="cursor-pointer hover:bg-gray-50 transition-colors"
+                      onClick={() => toggleSection('bookings')}
+                    >
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <Calendar className="h-5 w-5 text-blue-600" />
+                          <CardTitle>Booking Details ({data.bookings.length})</CardTitle>
+                        </div>
+                        {expandedSections.bookings ? (
+                          <ChevronUp className="h-5 w-5" />
+                        ) : (
+                          <ChevronDown className="h-5 w-5" />
+                        )}
+                      </div>
+                    </CardHeader>
+                    {expandedSections.bookings && (
+                      <CardContent>
+                        <div className="space-y-3">
+                          {/* Status Summary */}
+                          <div className="grid grid-cols-2 md:grid-cols-5 gap-3 mb-4">
+                            {['INQUIRY', 'TENTATIVE', 'CONFIRMED', 'COMPLETED', 'CANCELLED'].map(status => {
+                              const count = data.bookings.filter((b: any) => b.status === status).length;
+                              const colors = {
+                                INQUIRY: 'bg-gray-100 text-gray-800',
+                                TENTATIVE: 'bg-yellow-100 text-yellow-800',
+                                CONFIRMED: 'bg-blue-100 text-blue-800',
+                                COMPLETED: 'bg-green-100 text-green-800',
+                                CANCELLED: 'bg-red-100 text-red-800',
+                              };
+                              return (
+                                <div key={status} className="text-center p-3 border rounded-lg">
+                                  <p className="text-2xl font-bold">{count}</p>
+                                  <Badge className={colors[status as keyof typeof colors]}>
+                                    {status}
+                                  </Badge>
+                                </div>
+                              );
+                            })}
+                          </div>
+
+                          {/* Bookings List */}
+                          <div className="space-y-2 max-h-96 overflow-y-auto">
+                            {data.bookings.map((booking: any, index: number) => (
+                              <div
+                                key={index}
+                                className="flex flex-col lg:flex-row lg:items-center lg:justify-between p-3 border rounded-lg hover:bg-gray-50 transition-colors gap-2"
+                              >
+                                <div className="flex-1">
+                                  <div className="flex items-center gap-2">
+                                    <p className="font-medium">{booking.customerName}</p>
+                                    <Badge className={
+                                      booking.status === 'COMPLETED' ? 'bg-green-100 text-green-800' :
+                                      booking.status === 'CONFIRMED' ? 'bg-blue-100 text-blue-800' :
+                                      booking.status === 'TENTATIVE' ? 'bg-yellow-100 text-yellow-800' :
+                                      booking.status === 'CANCELLED' ? 'bg-red-100 text-red-800' :
+                                      'bg-gray-100 text-gray-800'
+                                    }>
+                                      {booking.status}
+                                    </Badge>
+                                  </div>
+                                  <p className="text-sm text-muted-foreground">
+                                    {booking.eventType} • {booking.hall}
+                                  </p>
+                                </div>
+                                <div className="flex items-center justify-between lg:flex-col lg:items-end gap-2">
+                                  <p className="text-sm text-muted-foreground">
+                                    {format(new Date(booking.eventDate), 'MMM d, yyyy')}
+                                  </p>
+                                  <p className="font-semibold text-green-600">
+                                    {formatCurrency(booking.totalAmount)}
+                                  </p>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      </CardContent>
+                    )}
+                  </Card>
+                )}
+
+                {/* Hall Performance */}
+                {data.bookings && data.bookings.length > 0 && (
+                  <Card>
+                    <CardHeader 
+                      className="cursor-pointer hover:bg-gray-50 transition-colors"
+                      onClick={() => toggleSection('halls')}
+                    >
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <Building2 className="h-5 w-5 text-purple-600" />
+                          <CardTitle>Hall Performance</CardTitle>
+                        </div>
+                        {expandedSections.halls ? (
+                          <ChevronUp className="h-5 w-5" />
+                        ) : (
+                          <ChevronDown className="h-5 w-5" />
+                        )}
+                      </div>
+                    </CardHeader>
+                    {expandedSections.halls && (
+                      <CardContent>
+                        <div className="space-y-4">
+                          {(() => {
+                            const hallStats = data.bookings.reduce((acc: any, booking: any) => {
+                              if (!acc[booking.hall]) {
+                                acc[booking.hall] = {
+                                  bookings: 0,
+                                  revenue: 0,
+                                  confirmed: 0,
+                                  completed: 0,
+                                };
+                              }
+                              acc[booking.hall].bookings++;
+                              acc[booking.hall].revenue += booking.totalAmount;
+                              if (booking.status === 'CONFIRMED') acc[booking.hall].confirmed++;
+                              if (booking.status === 'COMPLETED') acc[booking.hall].completed++;
+                              return acc;
+                            }, {});
+
+                            return Object.entries(hallStats)
+                              .sort(([, a]: any, [, b]: any) => b.revenue - a.revenue)
+                              .map(([hall, stats]: any) => (
+                                <div key={hall} className="p-4 border rounded-lg">
+                                  <div className="flex items-center justify-between mb-3">
+                                    <h4 className="font-semibold text-lg">{hall}</h4>
+                                    <span className="text-xl font-bold text-green-600">
+                                      {formatCurrency(stats.revenue)}
+                                    </span>
+                                  </div>
+                                  <div className="grid grid-cols-3 gap-4">
+                                    <div className="text-center">
+                                      <p className="text-2xl font-bold">{stats.bookings}</p>
+                                      <p className="text-xs text-muted-foreground">Total</p>
+                                    </div>
+                                    <div className="text-center">
+                                      <p className="text-2xl font-bold text-blue-600">{stats.confirmed}</p>
+                                      <p className="text-xs text-muted-foreground">Confirmed</p>
+                                    </div>
+                                    <div className="text-center">
+                                      <p className="text-2xl font-bold text-green-600">{stats.completed}</p>
+                                      <p className="text-xs text-muted-foreground">Completed</p>
+                                    </div>
+                                  </div>
+                                  <div className="mt-3">
+                                    <div className="w-full bg-gray-200 rounded-full h-2">
+                                      <div
+                                        className="bg-green-500 h-2 rounded-full transition-all"
+                                        style={{ 
+                                          width: `${(stats.revenue / Object.values(hallStats).reduce((sum: number, s: any) => sum + s.revenue, 0) * 100)}%` 
+                                        }}
+                                      />
+                                    </div>
+                                  </div>
+                                </div>
+                              ));
+                          })()}
+                        </div>
+                      </CardContent>
+                    )}
+                  </Card>
+                )}
+
+                {/* Summary Insights */}
+                <Card className="bg-gradient-to-br from-blue-50 to-purple-50">
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <Users className="h-5 w-5" />
+                      Key Insights
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-3">
+                    <div className="flex items-center justify-between p-3 bg-white rounded-lg">
+                      <span className="text-sm">Profit Margin</span>
+                      <span className="font-bold text-lg">
+                        {data.earnings.netEarnings > 0 
+                          ? ((data.netProfit / data.earnings.netEarnings) * 100).toFixed(1)
+                          : 0}%
+                      </span>
+                    </div>
+                    
+                    <div className="flex items-center justify-between p-3 bg-white rounded-lg">
+                      <span className="text-sm">Average Booking Value</span>
+                      <span className="font-bold text-lg">
+                        {data.bookings && data.bookings.length > 0
+                          ? formatCurrency(data.earnings.totalRevenue / data.bookings.length)
+                          : formatCurrency(0)}
+                      </span>
+                    </div>
+
+                    <div className="flex items-center justify-between p-3 bg-white rounded-lg">
+                      <span className="text-sm">Expense to Revenue Ratio</span>
+                      <span className="font-bold text-lg">
+                        {data.earnings.netEarnings > 0
+                          ? ((data.expenses.total / data.earnings.netEarnings) * 100).toFixed(1)
+                          : 0}%
+                      </span>
+                    </div>
+
+                    {data.bookings && data.bookings.length > 0 && (
+                      <div className="flex items-center justify-between p-3 bg-white rounded-lg">
+                        <span className="text-sm">Completion Rate</span>
+                        <span className="font-bold text-lg">
+                          {((data.bookings.filter((b: any) => b.status === 'COMPLETED').length / data.bookings.length) * 100).toFixed(1)}%
+                        </span>
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
+              </div>
+            )}
           </>
         )}
       </div>

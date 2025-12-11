@@ -54,11 +54,6 @@ export default function ExpensesPage() {
     return uniqueCategories.sort();
   }, [expenses]);
 
-  // Calculate total
-  const totalExpenses = useMemo(() => {
-    return filteredAndSortedExpenses.reduce((sum, exp) => sum + exp.amount, 0);
-  }, [expenses, searchQuery, categoryFilter]);
-
   // Filter and sort expenses
   const filteredAndSortedExpenses = useMemo(() => {
     if (!expenses) return [];
@@ -92,6 +87,11 @@ export default function ExpensesPage() {
 
     return filtered;
   }, [expenses, searchQuery, categoryFilter, sortField, sortOrder]);
+
+  // Calculate total
+  const totalExpenses = useMemo(() => {
+    return filteredAndSortedExpenses.reduce((sum, exp) => sum + exp.amount, 0);
+  }, [filteredAndSortedExpenses]);
 
   const formatCurrency = (amount: number) => {
     return `₹${amount.toLocaleString('en-IN', {

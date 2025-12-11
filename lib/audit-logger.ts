@@ -28,7 +28,7 @@ export async function createAuditLog(options: LogOptions): Promise<void> {
         entityId: options.entityId,
         level: options.level || 'INFO',
         message: options.message,
-        metadata: options.metadata || null,
+        metadata: options.metadata ?? undefined,
         ipAddress: options.ipAddress,
         userAgent: options.userAgent,
       },

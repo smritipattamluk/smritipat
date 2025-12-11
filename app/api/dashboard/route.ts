@@ -47,10 +47,10 @@ export async function GET(request: NextRequest) {
 
     // Calculate earnings
     let totalEarnings = 0;
-    bookings.forEach((booking) => {
+    bookings.forEach((booking: any) => {
       let bookingTotal = Number(booking.baseRent);
 
-      booking.bookingCharges.forEach((charge) => {
+      booking.bookingCharges.forEach((charge: any) => {
         bookingTotal += Number(charge.amount);
       });
 
@@ -71,7 +71,7 @@ export async function GET(request: NextRequest) {
       },
     });
 
-    const totalExpenses = expenses.reduce((sum, exp) => sum + Number(exp.amount), 0);
+    const totalExpenses = expenses.reduce((sum: number, exp: any) => sum + Number(exp.amount), 0);
 
     // Calculate net profit
     const netProfit = totalEarnings - totalExpenses;
@@ -94,7 +94,7 @@ export async function GET(request: NextRequest) {
 
     // Format booking stats
     const bookingsByStatus = bookingStats.reduce(
-      (acc, stat) => {
+      (acc: Record<string, number>, stat: any) => {
         acc[stat.status] = stat._count.id;
         return acc;
       },
@@ -110,7 +110,7 @@ export async function GET(request: NextRequest) {
       expenses: totalExpenses,
       netProfit,
       bookingsByStatus,
-      upcomingBookings: upcomingBookings.map((booking) => ({
+      upcomingBookings: upcomingBookings.map((booking: any) => ({
         id: booking.id,
         customerName: booking.customerName,
         eventDate: booking.eventDate,
