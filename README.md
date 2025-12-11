@@ -363,4 +363,5 @@ This project is built for internal business use at Smritipat Reception Hall.
 
 **Built with ❤️ using Next.js and TypeScript**
 #   s m r i t i p a t  
+ #   s m r i t i p a t  
  
