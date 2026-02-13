@@ -16,7 +16,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import ProtectedLayout from '@/components/layout/protected-layout';
-import { Plus, Search, Filter, X, ArrowUpDown, Download } from 'lucide-react';
+import { Plus, Search, Filter, X, ArrowUpDown, Download, DollarSign } from 'lucide-react';
 
 interface Expense {
   id: string;
