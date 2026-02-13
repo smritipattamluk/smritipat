@@ -2,7 +2,7 @@
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useParams, useRouter } from 'next/navigation';
-import { format } from 'date-fns';
+import { format } from 'date-fns';\nimport { formatTime12Hour } from '@/lib/utils';
 import { useState } from 'react';
 import Link from 'next/link';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -399,8 +399,8 @@ export default function BookingDetailPage() {
                   <div className="min-w-0 flex-1">
                     <p className="text-xs lg:text-sm text-muted-foreground">Time</p>
                     <p className="font-medium text-sm lg:text-base">
-                      {format(new Date(booking.startTime), 'hh:mm a')} -{' '}
-                      {format(new Date(booking.endTime), 'hh:mm a')}
+                      {formatTime12Hour(booking.startTime)} -{' '}
+                      {formatTime12Hour(booking.endTime)}
                     </p>
                   </div>
                 </div>

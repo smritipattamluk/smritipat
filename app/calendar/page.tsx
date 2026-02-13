@@ -3,6 +3,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { useState } from 'react';
 import { format, startOfMonth, endOfMonth, isSameDay, parseISO } from 'date-fns';
+import { formatTime12Hour } from '@/lib/utils';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
@@ -244,7 +245,7 @@ export default function CalendarPage() {
                             {booking.eventType} &middot; {booking.hall.name}
                           </p>
                           <p className="text-xs text-slate-400 mt-0.5">
-                            {format(parseISO(booking.startTime), 'hh:mm a')} - {format(parseISO(booking.endTime), 'hh:mm a')}
+                            {formatTime12Hour(booking.startTime)} - {formatTime12Hour(booking.endTime)}
                           </p>
                         </div>
                         <p className="text-sm font-semibold text-slate-900 shrink-0">₹{booking.baseRent.toLocaleString()}</p>
@@ -284,7 +285,7 @@ export default function CalendarPage() {
                                 {format(parseISO(booking.eventDate), 'MMM d, yyyy')} &middot; {booking.eventType}
                               </p>
                               <p className="text-xs text-slate-400">
-                                {booking.hall.name} &middot; {format(parseISO(booking.startTime), 'hh:mm a')} - {format(parseISO(booking.endTime), 'hh:mm a')}
+                                {booking.hall.name} &middot; {formatTime12Hour(booking.startTime)} - {formatTime12Hour(booking.endTime)}
                               </p>
                             </div>
                             <p className="font-medium text-sm shrink-0">₹{booking.baseRent.toLocaleString()}</p>
