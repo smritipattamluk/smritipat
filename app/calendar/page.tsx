@@ -60,13 +60,13 @@ export default function CalendarPage() {
 
   const getStatusColor = (status: string) => {
     const colors: Record<string, string> = {
-      INQUIRY: 'bg-gray-100 text-gray-800',
-      TENTATIVE: 'bg-yellow-100 text-yellow-800',
-      CONFIRMED: 'bg-blue-100 text-blue-800',
-      COMPLETED: 'bg-green-100 text-green-800',
-      CANCELLED: 'bg-red-100 text-red-800',
+      INQUIRY: 'bg-slate-100 text-slate-700 border border-slate-200',
+      TENTATIVE: 'bg-amber-50 text-amber-700 border border-amber-200',
+      CONFIRMED: 'bg-blue-50 text-blue-700 border border-blue-200',
+      COMPLETED: 'bg-emerald-50 text-emerald-700 border border-emerald-200',
+      CANCELLED: 'bg-red-50 text-red-700 border border-red-200',
     };
-    return colors[status] || 'bg-gray-100 text-gray-800';
+    return colors[status] || 'bg-slate-100 text-slate-700';
   };
 
   // Get bookings for a specific date
@@ -114,15 +114,13 @@ export default function CalendarPage() {
 
   return (
     <ProtectedLayout>
-      <div className="space-y-4 lg:space-y-6">
+      <div className="space-y-4 lg:space-y-5 animate-fade-in">
         <div className="flex flex-col gap-3 lg:flex-row lg:justify-between lg:items-center">
           <div>
-            <h1 className="text-2xl lg:text-3xl font-bold tracking-tight">Calendar</h1>
-            <p className="text-sm lg:text-base text-muted-foreground">
-              View and search bookings by date
-            </p>
+            <h1 className="text-2xl lg:text-3xl font-bold tracking-tight text-slate-900">Calendar</h1>
+            <p className="text-sm text-slate-500 mt-0.5">View and search bookings by date</p>
           </div>
-          <Button asChild className="w-full lg:w-auto">
+          <Button asChild className="w-full lg:w-auto bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 shadow-md shadow-blue-500/20">
             <Link href="/bookings/new">
               <CalendarIcon className="w-4 h-4 mr-2" />
               New Booking
@@ -131,82 +129,64 @@ export default function CalendarPage() {
         </div>
 
         {/* Search and Filters */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-lg flex items-center justify-between">
-              <span>Search & Filter</span>
+        <Card className="border-0 shadow-sm">
+          <CardContent className="p-4">
+            <div className="flex items-center justify-between mb-3">
+              <span className="text-sm font-medium text-slate-700">Search & Filter</span>
               {hasActiveFilters && (
-                <Button variant="ghost" size="sm" onClick={clearFilters}>
-                  <X className="w-4 h-4 mr-1" />
+                <button onClick={clearFilters} className="text-xs text-blue-600 hover:text-blue-700 font-medium flex items-center gap-1">
+                  <X className="w-3 h-3" />
                   Clear
-                </Button>
+                </button>
               )}
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div className="space-y-2">
-                <label className="text-sm font-medium">Search</label>
-                <div className="relative">
-                  <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                  <Input
-                    placeholder="Customer name, phone, or event type..."
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    className="pl-9"
-                  />
-                </div>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+                <Input
+                  placeholder="Customer, phone, or event type..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="pl-9 h-10 bg-slate-50/50 border-slate-200"
+                />
               </div>
-
-              <div className="space-y-2">
-                <label className="text-sm font-medium">Status</label>
-                <Select value={statusFilter} onValueChange={setStatusFilter}>
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All Statuses</SelectItem>
-                    <SelectItem value="INQUIRY">Inquiry</SelectItem>
-                    <SelectItem value="TENTATIVE">Tentative</SelectItem>
-                    <SelectItem value="CONFIRMED">Confirmed</SelectItem>
-                    <SelectItem value="COMPLETED">Completed</SelectItem>
-                    <SelectItem value="CANCELLED">Cancelled</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div className="space-y-2">
-                <label className="text-sm font-medium">Hall</label>
-                <Select value={hallFilter} onValueChange={setHallFilter}>
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All Halls</SelectItem>
-                    {halls?.map((hall) => (
-                      <SelectItem key={hall.id} value={hall.name}>
-                        {hall.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
+              <Select value={statusFilter} onValueChange={setStatusFilter}>
+                <SelectTrigger className="h-10 bg-slate-50/50 border-slate-200">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Statuses</SelectItem>
+                  <SelectItem value="INQUIRY">Inquiry</SelectItem>
+                  <SelectItem value="TENTATIVE">Tentative</SelectItem>
+                  <SelectItem value="CONFIRMED">Confirmed</SelectItem>
+                  <SelectItem value="COMPLETED">Completed</SelectItem>
+                  <SelectItem value="CANCELLED">Cancelled</SelectItem>
+                </SelectContent>
+              </Select>
+              <Select value={hallFilter} onValueChange={setHallFilter}>
+                <SelectTrigger className="h-10 bg-slate-50/50 border-slate-200">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Halls</SelectItem>
+                  {halls?.map((hall) => (
+                    <SelectItem key={hall.id} value={hall.name}>{hall.name}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
           </CardContent>
         </Card>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 lg:gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 lg:gap-5">
           {/* Calendar */}
-          <Card className="lg:col-span-1">
-            <CardHeader>
-              <CardTitle className="text-lg">Select Date</CardTitle>
-            </CardHeader>
-            <CardContent className="flex justify-center">
+          <Card className="lg:col-span-1 border-0 shadow-sm">
+            <CardContent className="p-4 flex justify-center">
               <Calendar
                 mode="single"
                 selected={selectedDate}
                 onSelect={setSelectedDate}
-                className="rounded-md border"
+                className="rounded-xl border-0"
                 modifiers={{
                   booked: (date) => datesWithBookings.has(format(date, 'yyyy-MM-dd')),
                 }}
@@ -217,168 +197,128 @@ export default function CalendarPage() {
             </CardContent>
           </Card>
 
-          {/* Bookings List */}
-          <Card className="lg:col-span-2">
-            <CardHeader>
-              <CardTitle className="text-lg">
+          {/* Bookings for selected date */}
+          <Card className="lg:col-span-2 border-0 shadow-sm">
+            <CardHeader className="pb-3">
+              <CardTitle className="text-base font-semibold">
                 {selectedDate ? (
-                  <>
-                    Bookings on {format(selectedDate, 'MMMM d, yyyy')}
-                    <span className="text-sm font-normal text-muted-foreground ml-2">
-                      ({selectedDateBookings.length} {selectedDateBookings.length === 1 ? 'booking' : 'bookings'})
+                  <span className="flex items-center gap-2 flex-wrap">
+                    {format(selectedDate, 'MMMM d, yyyy')}
+                    <span className="text-xs font-normal text-slate-500 bg-slate-100 px-2 py-0.5 rounded-full">
+                      {selectedDateBookings.length} {selectedDateBookings.length === 1 ? 'booking' : 'bookings'}
                     </span>
-                  </>
+                  </span>
                 ) : (
-                  'All Bookings'
+                  'Select a date'
                 )}
               </CardTitle>
             </CardHeader>
             <CardContent>
               {isLoading ? (
-                <div className="text-center py-8">Loading bookings...</div>
-              ) : selectedDate && selectedDateBookings.length > 0 ? (
                 <div className="space-y-3">
-                  {selectedDateBookings.map((booking) => (
+                  {[...Array(3)].map((_, i) => (
+                    <div key={i} className="p-3 border border-slate-100 rounded-xl">
+                      <div className="skeleton-shimmer h-4 w-32 rounded mb-2" />
+                      <div className="skeleton-shimmer h-3 w-48 rounded" />
+                    </div>
+                  ))}
+                </div>
+              ) : selectedDate && selectedDateBookings.length > 0 ? (
+                <div className="space-y-2">
+                  {selectedDateBookings.map((booking, i) => (
                     <Link
                       key={booking.id}
                       href={`/bookings/${booking.id}`}
-                      className="block p-4 border rounded-lg hover:bg-gray-50 transition-colors"
+                      className="block p-3.5 border border-slate-100 rounded-xl hover:border-slate-200 hover:bg-slate-50/50 active:bg-slate-100/50 transition-all"
+                      style={{ animationDelay: `${i * 50}ms` }}
                     >
                       <div className="flex items-start justify-between gap-3">
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center gap-2 mb-1">
-                            <p className="font-medium truncate">{booking.customerName}</p>
-                            <Badge className={getStatusColor(booking.status)}>
+                            <p className="font-medium text-sm text-slate-900 truncate">{booking.customerName}</p>
+                            <Badge className={`text-[10px] font-semibold ${getStatusColor(booking.status)}`}>
                               {booking.status}
                             </Badge>
                           </div>
-                          <p className="text-sm text-muted-foreground mb-1">
-                            {booking.eventType} • {booking.hall.name}
+                          <p className="text-xs text-slate-500">
+                            {booking.eventType} &middot; {booking.hall.name}
                           </p>
-                          <p className="text-sm text-muted-foreground">
-                            {format(parseISO(booking.startTime), 'hh:mm a')} -{' '}
-                            {format(parseISO(booking.endTime), 'hh:mm a')}
-                          </p>
-                          <p className="text-sm text-muted-foreground">
-                            {booking.customerPhone}
+                          <p className="text-xs text-slate-400 mt-0.5">
+                            {format(parseISO(booking.startTime), 'hh:mm a')} - {format(parseISO(booking.endTime), 'hh:mm a')}
                           </p>
                         </div>
-                        <div className="text-right">
-                          <p className="font-medium">₹{booking.baseRent.toLocaleString()}</p>
-                        </div>
+                        <p className="text-sm font-semibold text-slate-900 shrink-0">₹{booking.baseRent.toLocaleString()}</p>
                       </div>
                     </Link>
                   ))}
                 </div>
-              ) : selectedDate && selectedDateBookings.length === 0 ? (
-                <div className="text-center py-8 text-muted-foreground">
-                  No bookings on this date
+              ) : selectedDate ? (
+                <div className="text-center py-12">
+                  <CalendarIcon className="w-10 h-10 text-slate-200 mx-auto mb-3" />
+                  <p className="text-sm text-slate-500">No bookings on this date</p>
                 </div>
               ) : null}
 
-              {/* Filtered Results */}
               {hasActiveFilters && (
-                <>
-                  <div className="mt-6 pt-6 border-t">
-                    <h3 className="font-semibold mb-3">
-                      Search Results ({filteredBookings.length})
-                    </h3>
-                    {filteredBookings.length > 0 ? (
-                      <div className="space-y-3 max-h-[400px] overflow-y-auto">
-                        {filteredBookings.map((booking) => (
-                          <Link
-                            key={booking.id}
-                            href={`/bookings/${booking.id}`}
-                            className="block p-4 border rounded-lg hover:bg-gray-50 transition-colors"
-                          >
-                            <div className="flex items-start justify-between gap-3">
-                              <div className="flex-1 min-w-0">
-                                <div className="flex items-center gap-2 mb-1">
-                                  <p className="font-medium truncate">{booking.customerName}</p>
-                                  <Badge className={getStatusColor(booking.status)}>
-                                    {booking.status}
-                                  </Badge>
-                                </div>
-                                <p className="text-sm text-muted-foreground mb-1">
-                                  {format(parseISO(booking.eventDate), 'MMM d, yyyy')} • {booking.eventType}
-                                </p>
-                                <p className="text-sm text-muted-foreground">
-                                  {booking.hall.name} •{' '}
-                                  {format(parseISO(booking.startTime), 'hh:mm a')} -{' '}
-                                  {format(parseISO(booking.endTime), 'hh:mm a')}
-                                </p>
+                <div className="mt-5 pt-5 border-t border-slate-100">
+                  <h3 className="text-sm font-semibold text-slate-700 mb-3">
+                    Search Results ({filteredBookings.length})
+                  </h3>
+                  {filteredBookings.length > 0 ? (
+                    <div className="space-y-2 max-h-[400px] overflow-y-auto">
+                      {filteredBookings.map((booking, i) => (
+                        <Link
+                          key={booking.id}
+                          href={`/bookings/${booking.id}`}
+                          className="block p-3 border border-slate-100 rounded-xl hover:border-slate-200 hover:bg-slate-50/50 transition-all"
+                        >
+                          <div className="flex items-start justify-between gap-3">
+                            <div className="flex-1 min-w-0">
+                              <div className="flex items-center gap-2 mb-1">
+                                <p className="font-medium text-sm truncate">{booking.customerName}</p>
+                                <Badge className={`text-[10px] font-semibold ${getStatusColor(booking.status)}`}>
+                                  {booking.status}
+                                </Badge>
                               </div>
-                              <div className="text-right">
-                                <p className="font-medium">₹{booking.baseRent.toLocaleString()}</p>
-                              </div>
+                              <p className="text-xs text-slate-500">
+                                {format(parseISO(booking.eventDate), 'MMM d, yyyy')} &middot; {booking.eventType}
+                              </p>
+                              <p className="text-xs text-slate-400">
+                                {booking.hall.name} &middot; {format(parseISO(booking.startTime), 'hh:mm a')} - {format(parseISO(booking.endTime), 'hh:mm a')}
+                              </p>
                             </div>
-                          </Link>
-                        ))}
-                      </div>
-                    ) : (
-                      <div className="text-center py-4 text-muted-foreground">
-                        No bookings match your search criteria
-                      </div>
-                    )}
-                  </div>
-                </>
+                            <p className="font-medium text-sm shrink-0">₹{booking.baseRent.toLocaleString()}</p>
+                          </div>
+                        </Link>
+                      ))}
+                    </div>
+                  ) : (
+                    <p className="text-center py-4 text-sm text-slate-500">No bookings match your search</p>
+                  )}
+                </div>
               )}
             </CardContent>
           </Card>
         </div>
 
-        {/* Statistics Cards */}
-        <div className="grid grid-cols-2 lg:grid-cols-5 gap-3 lg:gap-4">
-          <Card>
-            <CardContent className="pt-6">
-              <div className="text-center">
-                <p className="text-2xl font-bold">
-                  {bookings?.filter((b) => b.status === 'INQUIRY').length || 0}
+        {/* Status Stats */}
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2.5">
+          {[
+            { status: 'INQUIRY', color: 'text-slate-700' },
+            { status: 'TENTATIVE', color: 'text-amber-600' },
+            { status: 'CONFIRMED', color: 'text-blue-600' },
+            { status: 'COMPLETED', color: 'text-emerald-600' },
+            { status: 'CANCELLED', color: 'text-red-600' },
+          ].map(({ status, color }) => (
+            <Card key={status} className="border-0 shadow-sm card-hover">
+              <CardContent className="p-3 lg:pt-5 text-center">
+                <p className={`text-xl lg:text-2xl font-bold ${color}`}>
+                  {bookings?.filter((b) => b.status === status).length || 0}
                 </p>
-                <p className="text-sm text-muted-foreground">Inquiries</p>
-              </div>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardContent className="pt-6">
-              <div className="text-center">
-                <p className="text-2xl font-bold text-yellow-600">
-                  {bookings?.filter((b) => b.status === 'TENTATIVE').length || 0}
-                </p>
-                <p className="text-sm text-muted-foreground">Tentative</p>
-              </div>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardContent className="pt-6">
-              <div className="text-center">
-                <p className="text-2xl font-bold text-blue-600">
-                  {bookings?.filter((b) => b.status === 'CONFIRMED').length || 0}
-                </p>
-                <p className="text-sm text-muted-foreground">Confirmed</p>
-              </div>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardContent className="pt-6">
-              <div className="text-center">
-                <p className="text-2xl font-bold text-green-600">
-                  {bookings?.filter((b) => b.status === 'COMPLETED').length || 0}
-                </p>
-                <p className="text-sm text-muted-foreground">Completed</p>
-              </div>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardContent className="pt-6">
-              <div className="text-center">
-                <p className="text-2xl font-bold text-red-600">
-                  {bookings?.filter((b) => b.status === 'CANCELLED').length || 0}
-                </p>
-                <p className="text-sm text-muted-foreground">Cancelled</p>
-              </div>
-            </CardContent>
-          </Card>
+                <p className="text-[11px] text-slate-500 mt-0.5">{status.charAt(0) + status.slice(1).toLowerCase()}</p>
+              </CardContent>
+            </Card>
+          ))}
         </div>
       </div>
     </ProtectedLayout>

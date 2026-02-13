@@ -59,17 +59,17 @@ export default function SettingsPage() {
     <ProtectedLayout>
       <div className="space-y-6 max-w-2xl">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Settings</h1>
-          <p className="text-muted-foreground">Manage system configuration</p>
+          <h1 className="text-2xl lg:text-3xl font-bold tracking-tight text-slate-900">Settings</h1>
+          <p className="text-sm text-slate-500 mt-0.5">Manage system configuration</p>
         </div>
 
-        <Card>
-          <CardHeader>
-            <CardTitle>System Settings</CardTitle>
+        <Card className="border-0 shadow-sm">
+          <CardHeader className="pb-3">
+            <CardTitle className="text-base font-semibold">System Settings</CardTitle>
           </CardHeader>
           <CardContent>
             {isLoading ? (
-              <div className="text-center py-8">Loading...</div>
+              <div className="space-y-4"><div className="skeleton-shimmer h-10 w-full rounded-xl" /><div className="skeleton-shimmer h-10 w-full rounded-xl" /></div>
             ) : (
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div className="space-y-2">
@@ -108,3 +108,4 @@ export default function SettingsPage() {
     </ProtectedLayout>
   );
 }
+

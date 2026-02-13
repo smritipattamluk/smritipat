@@ -18,7 +18,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import ProtectedLayout from '@/components/layout/protected-layout';
-import { ArrowLeft, Save } from 'lucide-react';
+import { ArrowLeft, Save, Loader2 } from 'lucide-react';
 import Link from 'next/link';
 
 const hallSchema = z.object({
@@ -73,22 +73,22 @@ export default function NewHallPage() {
   return (
     <ProtectedLayout>
       <div className="space-y-4 lg:space-y-6">
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-3">
           <Link href="/halls">
-            <Button variant="ghost" size="icon">
+            <Button variant="ghost" size="icon" className="rounded-xl h-9 w-9 hover:bg-slate-100">
               <ArrowLeft className="h-4 w-4" />
             </Button>
           </Link>
           <div>
-            <h1 className="text-2xl lg:text-3xl font-bold tracking-tight">New Hall</h1>
-            <p className="text-sm lg:text-base text-muted-foreground">Create a new hall</p>
+            <h1 className="text-2xl lg:text-3xl font-bold tracking-tight text-slate-900">New Hall</h1>
+            <p className="text-sm lg:text-base text-slate-500 mt-0.5">Create a new hall</p>
           </div>
         </div>
 
         <form onSubmit={handleSubmit(onSubmit)}>
-          <Card>
-            <CardHeader>
-              <CardTitle>Hall Details</CardTitle>
+          <Card className="border-0 shadow-sm">
+            <CardHeader className="pb-4">
+              <CardTitle className="text-base font-semibold">Hall Details</CardTitle>
             </CardHeader>
             <CardContent className="space-y-6">
               {/* Hall Name */}
@@ -150,26 +150,32 @@ export default function NewHallPage() {
               </div>
 
               {/* Submit Buttons */}
-              <div className="flex flex-col sm:flex-row gap-3">
+              <div className="flex flex-col sm:flex-row gap-3 pt-2">
                 <Button
                   type="submit"
                   disabled={createHall.isPending}
-                  className="flex items-center justify-center gap-2 w-full sm:w-auto"
+                  className="flex items-center justify-center gap-2 w-full sm:w-auto bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 rounded-lg h-11"
                 >
-                  <Save className="h-4 w-4" />
+                  {createHall.isPending ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : (
+                    <Save className="h-4 w-4" />
+                  )}
                   {createHall.isPending ? 'Creating...' : 'Create Hall'}
                 </Button>
                 <Link href="/halls" className="w-full sm:w-auto">
-                  <Button type="button" variant="outline" className="w-full">
+                  <Button type="button" variant="outline" className="w-full rounded-lg h-11 border-slate-200">
                     Cancel
                   </Button>
                 </Link>
               </div>
 
               {createHall.isError && (
-                <p className="text-sm text-red-500">
-                  {createHall.error?.message || 'Failed to create hall'}
-                </p>
+                <div className="p-3 rounded-lg bg-red-50 border border-red-200">
+                  <p className="text-sm text-red-700">
+                    {createHall.error?.message || 'Failed to create hall'}
+                  </p>
+                </div>
               )}
             </CardContent>
           </Card>

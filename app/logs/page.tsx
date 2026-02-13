@@ -14,7 +14,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import ProtectedLayout from '@/components/layout/protected-layout';
-import { Trash2, Download, RefreshCw } from 'lucide-react';
+import { Trash2, Download, RefreshCw, FileText, Shield } from 'lucide-react';
 
 interface AuditLog {
   id: string;
@@ -83,30 +83,30 @@ export default function LogsPage() {
   const getLevelColor = (level: string) => {
     switch (level) {
       case 'ERROR':
-        return 'bg-red-100 text-red-800';
+        return 'bg-red-50 text-red-700 border border-red-200';
       case 'WARN':
-        return 'bg-yellow-100 text-yellow-800';
+        return 'bg-amber-50 text-amber-700 border border-amber-200';
       case 'INFO':
-        return 'bg-blue-100 text-blue-800';
+        return 'bg-blue-50 text-blue-700 border border-blue-200';
       default:
-        return 'bg-gray-100 text-gray-800';
+        return 'bg-slate-50 text-slate-700 border border-slate-200';
     }
   };
 
   const getActionColor = (action: string) => {
     switch (action) {
       case 'CREATE':
-        return 'bg-green-100 text-green-800';
+        return 'bg-emerald-50 text-emerald-700 border border-emerald-200';
       case 'UPDATE':
-        return 'bg-blue-100 text-blue-800';
+        return 'bg-blue-50 text-blue-700 border border-blue-200';
       case 'DELETE':
-        return 'bg-red-100 text-red-800';
+        return 'bg-red-50 text-red-700 border border-red-200';
       case 'LOGIN':
-        return 'bg-purple-100 text-purple-800';
+        return 'bg-violet-50 text-violet-700 border border-violet-200';
       case 'EXPORT':
-        return 'bg-orange-100 text-orange-800';
+        return 'bg-orange-50 text-orange-700 border border-orange-200';
       default:
-        return 'bg-gray-100 text-gray-800';
+        return 'bg-slate-50 text-slate-700 border border-slate-200';
     }
   };
 
@@ -145,18 +145,23 @@ export default function LogsPage() {
 
   return (
     <ProtectedLayout>
-      <div className="space-y-6">
+      <div className="space-y-4 lg:space-y-6 animate-fade-in">
         <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
-          <div>
-            <h1 className="text-3xl font-bold tracking-tight">Audit Logs</h1>
-            <p className="text-muted-foreground">System activity and security logs</p>
+          <div className="flex items-center gap-3">
+            <div className="hidden lg:flex w-10 h-10 rounded-xl bg-gradient-to-br from-slate-500 to-slate-700 items-center justify-center">
+              <Shield className="w-5 h-5 text-white" />
+            </div>
+            <div>
+              <h1 className="text-2xl lg:text-3xl font-bold tracking-tight text-slate-900">Audit Logs</h1>
+              <p className="text-sm text-slate-500 mt-0.5">System activity and security logs</p>
+            </div>
           </div>
           <div className="flex gap-2">
-            <Button variant="outline" size="sm" onClick={() => refetch()}>
+            <Button variant="outline" size="sm" onClick={() => refetch()} className="rounded-lg border-slate-200">
               <RefreshCw className="w-4 h-4 mr-2" />
               Refresh
             </Button>
-            <Button variant="outline" size="sm" onClick={exportLogs} disabled={!data?.logs.length}>
+            <Button variant="outline" size="sm" onClick={exportLogs} disabled={!data?.logs.length} className="rounded-lg border-slate-200">
               <Download className="w-4 h-4 mr-2" />
               Export CSV
             </Button>
@@ -165,19 +170,17 @@ export default function LogsPage() {
               size="sm"
               onClick={handleClearOldLogs}
               disabled={clearOldLogs.isPending}
+              className="rounded-lg"
             >
               <Trash2 className="w-4 h-4 mr-2" />
-              Clear Old Logs
+              Clear Old
             </Button>
           </div>
         </div>
 
         {/* Filters */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Filters</CardTitle>
-          </CardHeader>
-          <CardContent>
+        <Card className="border-0 shadow-sm">
+          <CardContent className="p-4">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div className="space-y-2">
                 <label className="text-sm font-medium">Level</label>
@@ -233,41 +236,57 @@ export default function LogsPage() {
         </Card>
 
         {/* Logs Table */}
-        <Card>
-          <CardHeader>
-            <CardTitle>
-              Activity Log
+        <Card className="border-0 shadow-sm">
+          <CardHeader className="pb-3">
+            <div className="flex items-center gap-2">
+              <FileText className="w-4 h-4 text-slate-500" />
+              <CardTitle className="text-base font-semibold">
+                Activity Log
+              </CardTitle>
               {data && (
-                <span className="text-sm font-normal text-muted-foreground ml-2">
-                  ({data.pagination.total} total entries)
+                <span className="text-xs font-medium text-slate-400 bg-slate-100 px-2 py-0.5 rounded-full">
+                  {data.pagination.total}
                 </span>
               )}
-            </CardTitle>
+            </div>
           </CardHeader>
           <CardContent>
             {isLoading ? (
-              <div className="text-center py-8">Loading logs...</div>
+              <div className="space-y-3">
+                {[...Array(5)].map((_, i) => (
+                  <div key={i} className="p-4 rounded-xl bg-slate-50 animate-pulse space-y-3">
+                    <div className="flex gap-2">
+                      <div className="h-5 w-14 bg-slate-200 rounded-full" />
+                      <div className="h-5 w-16 bg-slate-200 rounded-full" />
+                      <div className="h-5 w-20 bg-slate-200 rounded-full" />
+                    </div>
+                    <div className="h-4 w-3/4 bg-slate-200 rounded" />
+                    <div className="h-3 w-1/2 bg-slate-100 rounded" />
+                  </div>
+                ))}
+              </div>
             ) : data && data.logs.length > 0 ? (
               <>
-                <div className="space-y-4">
-                  {data.logs.map((log) => (
+                <div className="space-y-3">
+                  {data.logs.map((log, index) => (
                     <div
                       key={log.id}
-                      className="p-4 border rounded-lg space-y-2"
+                      className="p-4 rounded-xl bg-slate-50/50 hover:bg-slate-50 transition-colors space-y-2"
+                      style={{ animationDelay: `${index * 30}ms` }}
                     >
-                      <div className="flex flex-wrap items-center gap-2">
-                        <Badge className={getLevelColor(log.level)}>{log.level}</Badge>
-                        <Badge className={getActionColor(log.action)}>{log.action}</Badge>
-                        <Badge variant="outline">{log.entity}</Badge>
-                        <span className="text-sm text-muted-foreground">
+                      <div className="flex flex-wrap items-center gap-1.5">
+                        <Badge className={`${getLevelColor(log.level)} text-[10px] font-semibold px-2 py-0.5`}>{log.level}</Badge>
+                        <Badge className={`${getActionColor(log.action)} text-[10px] font-semibold px-2 py-0.5`}>{log.action}</Badge>
+                        <Badge variant="outline" className="text-[10px] font-semibold px-2 py-0.5 border-slate-200">{log.entity}</Badge>
+                        <span className="text-xs text-slate-400 ml-auto">
                           {format(new Date(log.createdAt), 'MMM d, yyyy HH:mm:ss')}
                         </span>
                       </div>
-                      <p className="text-sm">{log.message}</p>
-                      <div className="flex flex-wrap gap-4 text-xs text-muted-foreground">
+                      <p className="text-sm text-slate-700">{log.message}</p>
+                      <div className="flex flex-wrap gap-3 text-xs text-slate-400">
                         {log.user && (
                           <span>
-                            User: <span className="font-medium">{log.user.name}</span> ({log.user.email})
+                            User: <span className="font-medium text-slate-600">{log.user.name}</span> ({log.user.email})
                           </span>
                         )}
                         {log.ipAddress && <span>IP: {log.ipAddress}</span>}
@@ -275,10 +294,10 @@ export default function LogsPage() {
                       </div>
                       {log.metadata && Object.keys(log.metadata).length > 0 && (
                         <details className="text-xs">
-                          <summary className="cursor-pointer text-muted-foreground hover:text-foreground">
+                          <summary className="cursor-pointer text-slate-400 hover:text-slate-700 transition-colors">
                             View metadata
                           </summary>
-                          <pre className="mt-2 p-2 bg-gray-50 rounded overflow-x-auto">
+                          <pre className="mt-2 p-2 bg-white rounded-lg border border-slate-100 overflow-x-auto text-slate-600">
                             {JSON.stringify(log.metadata, null, 2)}
                           </pre>
                         </details>
@@ -289,16 +308,17 @@ export default function LogsPage() {
 
                 {/* Pagination */}
                 {data.pagination.totalPages > 1 && (
-                  <div className="flex items-center justify-between mt-4 pt-4 border-t">
+                  <div className="flex items-center justify-between mt-4 pt-4 border-t border-slate-100">
                     <Button
                       variant="outline"
                       size="sm"
                       onClick={() => setPage((p) => Math.max(1, p - 1))}
                       disabled={page === 1}
+                      className="rounded-lg border-slate-200"
                     >
                       Previous
                     </Button>
-                    <span className="text-sm text-muted-foreground">
+                    <span className="text-xs font-medium text-slate-500">
                       Page {page} of {data.pagination.totalPages}
                     </span>
                     <Button
@@ -306,6 +326,7 @@ export default function LogsPage() {
                       size="sm"
                       onClick={() => setPage((p) => p + 1)}
                       disabled={page >= data.pagination.totalPages}
+                      className="rounded-lg border-slate-200"
                     >
                       Next
                     </Button>
@@ -313,8 +334,9 @@ export default function LogsPage() {
                 )}
               </>
             ) : (
-              <div className="text-center py-8 text-muted-foreground">
-                No logs found
+              <div className="text-center py-12">
+                <FileText className="w-10 h-10 text-slate-300 mx-auto mb-3" />
+                <p className="text-sm text-slate-500">No logs found</p>
               </div>
             )}
           </CardContent>

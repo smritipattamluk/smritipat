@@ -202,8 +202,18 @@ export default function BookingDetailPage() {
   if (isLoading) {
     return (
       <ProtectedLayout>
-        <div className="flex items-center justify-center h-64">
-          <p className="text-muted-foreground">Loading booking details...</p>
+        <div className="space-y-4 animate-fade-in">
+          <div className="flex items-center gap-3">
+            <div className="skeleton-shimmer h-10 w-10 rounded-lg" />
+            <div><div className="skeleton-shimmer h-6 w-48 rounded mb-2" /><div className="skeleton-shimmer h-4 w-32 rounded" /></div>
+          </div>
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+            <div className="lg:col-span-2 space-y-4">
+              <div className="bg-white border border-slate-100 rounded-xl p-5 space-y-3">{[...Array(3)].map((_,i) => <div key={i} className="skeleton-shimmer h-5 w-full rounded" />)}</div>
+              <div className="bg-white border border-slate-100 rounded-xl p-5 space-y-3">{[...Array(4)].map((_,i) => <div key={i} className="skeleton-shimmer h-5 w-full rounded" />)}</div>
+            </div>
+            <div className="bg-white border border-slate-100 rounded-xl p-5 space-y-3">{[...Array(6)].map((_,i) => <div key={i} className="skeleton-shimmer h-5 w-full rounded" />)}</div>
+          </div>
         </div>
       </ProtectedLayout>
     );
@@ -238,30 +248,30 @@ export default function BookingDetailPage() {
 
   const getStatusColor = (status: string) => {
     const colors: Record<string, string> = {
-      INQUIRY: 'bg-gray-100 text-gray-800',
-      TENTATIVE: 'bg-yellow-100 text-yellow-800',
-      CONFIRMED: 'bg-blue-100 text-blue-800',
-      COMPLETED: 'bg-green-100 text-green-800',
-      CANCELLED: 'bg-red-100 text-red-800',
+      INQUIRY: 'bg-slate-100 text-slate-700 border border-slate-200',
+      TENTATIVE: 'bg-amber-50 text-amber-700 border border-amber-200',
+      CONFIRMED: 'bg-blue-50 text-blue-700 border border-blue-200',
+      COMPLETED: 'bg-emerald-50 text-emerald-700 border border-emerald-200',
+      CANCELLED: 'bg-red-50 text-red-700 border border-red-200',
     };
-    return colors[status] || 'bg-gray-100 text-gray-800';
+    return colors[status] || 'bg-slate-100 text-slate-700';
   };
 
   return (
     <ProtectedLayout>
-      <div className="space-y-4 lg:space-y-6">
+      <div className="space-y-4 lg:space-y-5 animate-fade-in">
         {/* Header */}
-        <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-          <div className="flex items-start gap-3 lg:gap-4">
+        <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+          <div className="flex items-start gap-3">
             <Link href="/bookings">
-              <Button variant="ghost" size="icon" className="shrink-0">
-                <ArrowLeft className="h-4 w-4" />
-              </Button>
+              <button className="flex items-center justify-center w-10 h-10 rounded-xl bg-slate-100 hover:bg-slate-200 active:scale-95 transition-all shrink-0">
+                <ArrowLeft className="h-4 w-4 text-slate-700" />
+              </button>
             </Link>
             <div className="min-w-0 flex-1">
-              <h1 className="text-2xl lg:text-3xl font-bold tracking-tight">Booking Details</h1>
-              <p className="text-sm lg:text-base text-muted-foreground truncate">
-                {booking.customerName} - {booking.eventType}
+              <h1 className="text-xl lg:text-2xl font-bold tracking-tight text-slate-900">Booking Details</h1>
+              <p className="text-sm text-slate-500 truncate">
+                {booking.customerName} &middot; {booking.eventType}
               </p>
             </div>
           </div>
@@ -328,9 +338,9 @@ export default function BookingDetailPage() {
           {/* Left Column - Details */}
           <div className="lg:col-span-2 space-y-4 lg:space-y-6">
             {/* Customer Information */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Customer Information</CardTitle>
+            <Card className="border-0 shadow-sm">
+              <CardHeader className="pb-3">
+                <CardTitle className="text-base font-semibold">Customer Information</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="flex items-center gap-3">
@@ -360,9 +370,9 @@ export default function BookingDetailPage() {
             </Card>
 
             {/* Event Details */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Event Details</CardTitle>
+            <Card className="border-0 shadow-sm">
+              <CardHeader className="pb-3">
+                <CardTitle className="text-base font-semibold">Event Details</CardTitle>
               </CardHeader>
               <CardContent className="space-y-3 lg:space-y-4">
                 <div className="flex items-center gap-2 lg:gap-3">
@@ -406,7 +416,7 @@ export default function BookingDetailPage() {
                 {booking.notes && (
                   <div>
                     <p className="text-xs lg:text-sm text-muted-foreground mb-1">Notes</p>
-                    <p className="text-xs lg:text-sm bg-muted p-2 lg:p-3 rounded break-words">{booking.notes}</p>
+                    <p className="text-xs lg:text-sm bg-slate-50 p-2 lg:p-3 rounded-lg break-words">{booking.notes}</p>
                   </div>
                 )}
               </CardContent>
@@ -487,7 +497,7 @@ export default function BookingDetailPage() {
                     {booking.bookingCharges.map((charge) => (
                       <div
                         key={charge.id}
-                        className="flex flex-col gap-2 lg:flex-row lg:items-center lg:justify-between p-2 lg:p-3 bg-muted rounded"
+                        className="flex flex-col gap-2 lg:flex-row lg:items-center lg:justify-between p-2 lg:p-3 bg-slate-50/70 rounded-lg"
                       >
                         <div className="flex-1 min-w-0">
                           <p className="font-medium text-sm lg:text-base">{charge.description}</p>
@@ -618,7 +628,7 @@ export default function BookingDetailPage() {
                     {booking.payments.map((payment) => (
                       <div
                         key={payment.id}
-                        className="flex flex-col gap-2 lg:flex-row lg:items-center lg:justify-between p-2 lg:p-3 bg-muted rounded"
+                        className="flex flex-col gap-2 lg:flex-row lg:items-center lg:justify-between p-2 lg:p-3 bg-slate-50/70 rounded-lg"
                       >
                         <div className="flex-1 min-w-0">
                           <p className="font-medium text-sm lg:text-base">
@@ -657,9 +667,9 @@ export default function BookingDetailPage() {
 
           {/* Right Column - Summary */}
           <div className="space-y-4 lg:space-y-6">
-            <Card>
-              <CardHeader>
-                <CardTitle>Financial Summary</CardTitle>
+            <Card className="border-0 shadow-sm sticky top-4">
+              <CardHeader className="pb-3">
+                <CardTitle className="text-base font-semibold">Financial Summary</CardTitle>
               </CardHeader>
               <CardContent className="space-y-3 lg:space-y-4">
                 <div className="flex justify-between items-center">

@@ -78,12 +78,12 @@ export default function UsersPage() {
 
   const getRoleBadgeColor = (role: string) => {
     const colors: Record<string, string> = {
-      ADMIN: 'bg-purple-100 text-purple-800',
-      MANAGER: 'bg-blue-100 text-blue-800',
-      ACCOUNTANT: 'bg-green-100 text-green-800',
-      VIEWER: 'bg-gray-100 text-gray-800',
+      ADMIN: 'bg-red-50 text-red-700 border border-red-200',
+      MANAGER: 'bg-blue-50 text-blue-700 border border-blue-200',
+      ACCOUNTANT: 'bg-emerald-50 text-emerald-700 border border-emerald-200',
+      VIEWER: 'bg-slate-100 text-slate-700 border border-slate-200',
     };
-    return colors[role] || 'bg-gray-100 text-gray-800';
+    return colors[role] || 'bg-slate-100 text-slate-700 border border-slate-200';
   };
 
   const clearFilters = () => {
@@ -99,13 +99,13 @@ export default function UsersPage() {
       <div className="space-y-6">
         <div className="flex flex-col gap-3 lg:flex-row lg:justify-between lg:items-center">
           <div>
-            <h1 className="text-2xl lg:text-3xl font-bold tracking-tight">Users</h1>
-            <p className="text-sm lg:text-base text-muted-foreground">
+            <h1 className="text-2xl lg:text-3xl font-bold tracking-tight text-slate-900">Users</h1>
+            <p className="text-sm text-slate-500 mt-0.5">
               {filteredUsers.length} of {stats.total} users
             </p>
           </div>
           <Link href="/users/new">
-            <Button className="w-full lg:w-auto">
+            <Button className="w-full lg:w-auto bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 shadow-md shadow-blue-500/20">
               <Plus className="w-4 h-4 mr-2" />
               New User
             </Button>
@@ -219,14 +219,14 @@ export default function UsersPage() {
               <div className="space-y-4">
                 {filteredUsers.map((user) => (
                   <Link key={user.id} href={`/users/${user.id}`}>
-                    <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between p-4 border rounded-lg hover:bg-gray-50 transition-colors cursor-pointer gap-2">
-                      <div className="flex-1">
-                        <p className="font-medium">{user.name}</p>
-                        <p className="text-sm text-muted-foreground">{user.email}</p>
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between p-3.5 bg-white border border-slate-100 rounded-xl hover:border-slate-200 hover:shadow-sm transition-all cursor-pointer gap-2">
+                      <div className="flex-1 min-w-0">
+                        <p className="font-medium text-sm text-slate-900">{user.name}</p>
+                        <p className="text-xs text-slate-500">{user.email}</p>
                       </div>
-                      <div className="flex items-center gap-2">
-                        <Badge className={getRoleBadgeColor(user.role)}>{user.role}</Badge>
-                        <Badge variant={user.isActive ? 'default' : 'secondary'}>
+                      <div className="flex items-center gap-1.5">
+                        <Badge className={`text-[10px] font-semibold ${getRoleBadgeColor(user.role)}`}>{user.role}</Badge>
+                        <Badge className={`text-[10px] ${user.isActive ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : ''}`} variant={user.isActive ? 'default' : 'secondary'}>
                           {user.isActive ? 'Active' : 'Inactive'}
                         </Badge>
                       </div>

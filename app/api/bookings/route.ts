@@ -3,6 +3,7 @@ import { prisma } from '@/lib/db';
 import { requireAuth } from '@/lib/auth-utils';
 import { z } from 'zod';
 import { logger, getRequestInfo } from '@/lib/audit-logger';
+import { timeStringToDate, dateToTimeString } from '@/lib/utils';
 
 const bookingSchema = z.object({
   hallId: z.string(),
@@ -52,7 +53,14 @@ export async function GET(request: NextRequest) {
       orderBy: { eventDate: 'desc' },
     });
 
-    return NextResponse.json(bookings);
+    // Serialize times properly
+    const serializedBookings = bookings.map(booking => ({
+      ...booking,
+      startTime: dateToTimeString(booking.startTime),
+      endTime: dateToTimeString(booking.endTime),
+    }));
+
+    return NextResponse.json(serializedBookings);
   } catch (error) {
     console.error('Error fetching bookings:', error);
     return NextResponse.json({ error: 'Failed to fetch bookings' }, { status: 500 });
@@ -77,8 +85,8 @@ export async function POST(request: NextRequest) {
 
     // Parse dates and times
     const eventDate = new Date(validatedData.eventDate);
-    const startTime = new Date(`1970-01-01T${validatedData.startTime}:00`);
-    const endTime = new Date(`1970-01-01T${validatedData.endTime}:00`);
+    const startTime = timeStringToDate(validatedData.startTime);
+    const endTime = timeStringToDate(validatedData.endTime);
 
     // Check for overlapping bookings
     const overlappingBooking = await prisma.booking.findFirst({

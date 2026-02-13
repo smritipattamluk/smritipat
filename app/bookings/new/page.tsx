@@ -20,7 +20,7 @@ import {
 } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import ProtectedLayout from '@/components/layout/protected-layout';
-import { ArrowLeft, Save } from 'lucide-react';
+import { ArrowLeft, Save, Loader2 } from 'lucide-react';
 import Link from 'next/link';
 
 const bookingSchema = z.object({
@@ -115,23 +115,23 @@ export default function NewBookingPage() {
 
   return (
     <ProtectedLayout>
-      <div className="space-y-6">
-        <div className="flex items-center gap-4">
+      <div className="space-y-4 lg:space-y-6 animate-fade-in">
+        <div className="flex items-center gap-3">
           <Link href="/bookings">
-            <Button variant="ghost" size="icon">
+            <Button variant="ghost" size="icon" className="rounded-xl h-9 w-9 hover:bg-slate-100">
               <ArrowLeft className="h-4 w-4" />
             </Button>
           </Link>
           <div>
-            <h1 className="text-3xl font-bold tracking-tight">New Booking</h1>
-            <p className="text-muted-foreground">Create a new hall booking</p>
+            <h1 className="text-2xl lg:text-3xl font-bold tracking-tight text-slate-900">New Booking</h1>
+            <p className="text-sm text-slate-500 mt-0.5">Create a new hall booking</p>
           </div>
         </div>
 
         <form onSubmit={handleSubmit(onSubmit)}>
-          <Card>
-            <CardHeader>
-              <CardTitle>Booking Details</CardTitle>
+          <Card className="border-0 shadow-sm">
+            <CardHeader className="pb-4">
+              <CardTitle className="text-base font-semibold">Booking Details</CardTitle>
             </CardHeader>
             <CardContent className="space-y-6">
               {/* Hall Selection */}
@@ -325,26 +325,32 @@ export default function NewBookingPage() {
               </div>
 
               {/* Submit Buttons */}
-              <div className="flex flex-col sm:flex-row gap-3">
+              <div className="flex flex-col sm:flex-row gap-3 pt-2">
                 <Button
                   type="submit"
                   disabled={createBooking.isPending}
-                  className="flex items-center justify-center gap-2 w-full sm:w-auto"
+                  className="flex items-center justify-center gap-2 w-full sm:w-auto bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 rounded-lg h-11"
                 >
-                  <Save className="h-4 w-4" />
+                  {createBooking.isPending ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : (
+                    <Save className="h-4 w-4" />
+                  )}
                   {createBooking.isPending ? 'Creating...' : 'Create Booking'}
                 </Button>
                 <Link href="/bookings" className="w-full sm:w-auto">
-                  <Button type="button" variant="outline" className="w-full">
+                  <Button type="button" variant="outline" className="w-full rounded-lg h-11 border-slate-200">
                     Cancel
                   </Button>
                 </Link>
               </div>
 
               {createBooking.isError && (
-                <p className="text-sm text-red-500">
-                  {createBooking.error?.message || 'Failed to create booking'}
-                </p>
+                <div className="p-3 rounded-lg bg-red-50 border border-red-200">
+                  <p className="text-sm text-red-700">
+                    {createBooking.error?.message || 'Failed to create booking'}
+                  </p>
+                </div>
               )}
             </CardContent>
           </Card>

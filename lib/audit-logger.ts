@@ -64,8 +64,8 @@ export const logger = {
   /**
    * Log a successful creation
    */
-  created: (entity: string, entityId: string, userId?: string, metadata?: Record<string, any>) =>
-    createAuditLog({
+  created: async (entity: string, entityId: string, userId?: string, metadata?: Record<string, any>) => {
+    return createAuditLog({
       userId,
       action: 'CREATE',
       entity,
@@ -73,13 +73,14 @@ export const logger = {
       level: 'INFO',
       message: `${entity} created successfully`,
       metadata,
-    }),
+    });
+  },
 
   /**
    * Log a successful update
    */
-  updated: (entity: string, entityId: string, userId?: string, metadata?: Record<string, any>) =>
-    createAuditLog({
+  updated: async (entity: string, entityId: string, userId?: string, metadata?: Record<string, any>) => {
+    return createAuditLog({
       userId,
       action: 'UPDATE',
       entity,
@@ -87,13 +88,14 @@ export const logger = {
       level: 'INFO',
       message: `${entity} updated successfully`,
       metadata,
-    }),
+    });
+  },
 
   /**
    * Log a successful deletion
    */
-  deleted: (entity: string, entityId: string, userId?: string, metadata?: Record<string, any>) =>
-    createAuditLog({
+  deleted: async (entity: string, entityId: string, userId?: string, metadata?: Record<string, any>) => {
+    return createAuditLog({
       userId,
       action: 'DELETE',
       entity,
@@ -101,13 +103,14 @@ export const logger = {
       level: 'INFO',
       message: `${entity} deleted`,
       metadata,
-    }),
+    });
+  },
 
   /**
    * Log a user login
    */
-  login: (userId: string, ipAddress?: string, userAgent?: string) =>
-    createAuditLog({
+  login: async (userId: string, ipAddress?: string, userAgent?: string) => {
+    return createAuditLog({
       userId,
       action: 'LOGIN',
       entity: 'user',
@@ -116,13 +119,14 @@ export const logger = {
       message: 'User logged in',
       ipAddress,
       userAgent,
-    }),
+    });
+  },
 
   /**
    * Log a user logout
    */
-  logout: (userId: string, ipAddress?: string) =>
-    createAuditLog({
+  logout: async (userId: string, ipAddress?: string) => {
+    return createAuditLog({
       userId,
       action: 'LOGOUT',
       entity: 'user',
@@ -130,44 +134,48 @@ export const logger = {
       level: 'INFO',
       message: 'User logged out',
       ipAddress,
-    }),
+    });
+  },
 
   /**
    * Log a data export
    */
-  export: (entity: string, userId?: string, metadata?: Record<string, any>) =>
-    createAuditLog({
+  export: async (entity: string, userId?: string, metadata?: Record<string, any>) => {
+    return createAuditLog({
       userId,
       action: 'EXPORT',
       entity,
       level: 'INFO',
       message: `${entity} data exported`,
       metadata,
-    }),
+    });
+  },
 
   /**
    * Log an error
    */
-  error: (entity: string, message: string, userId?: string, metadata?: Record<string, any>) =>
-    createAuditLog({
+  error: async (entity: string, message: string, userId?: string, metadata?: Record<string, any>) => {
+    return createAuditLog({
       userId,
       action: 'VIEW',
       entity,
       level: 'ERROR',
       message,
       metadata,
-    }),
+    });
+  },
 
   /**
    * Log a warning
    */
-  warn: (entity: string, message: string, userId?: string, metadata?: Record<string, any>) =>
-    createAuditLog({
+  warn: async (entity: string, message: string, userId?: string, metadata?: Record<string, any>) => {
+    return createAuditLog({
       userId,
       action: 'VIEW',
       entity,
       level: 'WARN',
       message,
       metadata,
-    }),
+    });
+  },
 };

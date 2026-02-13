@@ -161,55 +161,44 @@ export default function ReportsPage() {
 
   return (
     <ProtectedLayout>
-      <div className="space-y-6">
+      <div className="space-y-4 lg:space-y-5 animate-fade-in">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Reports</h1>
-          <p className="text-muted-foreground">Financial reports and analytics</p>
+          <h1 className="text-2xl lg:text-3xl font-bold tracking-tight text-slate-900">Reports</h1>
+          <p className="text-sm text-slate-500 mt-0.5">Financial reports and analytics</p>
         </div>
 
-        <Card>
-          <CardHeader>
-            <CardTitle>Generate Report</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="flex flex-col lg:flex-row gap-4 items-start lg:items-end">
+        <Card className="border-0 shadow-sm">
+          <CardContent className="p-4">
+            <div className="flex flex-col lg:flex-row gap-3 items-start lg:items-end">
               <div className="w-full lg:w-auto">
-                <label className="text-sm font-medium">Start Date</label>
+                <label className="text-xs font-medium text-slate-500 uppercase tracking-wide">Start Date</label>
                 <input
                   type="date"
                   value={startDate}
                   onChange={(e) => setStartDate(e.target.value)}
-                  className="block w-full mt-1 px-3 py-2 border rounded-md"
+                  className="block w-full mt-1 px-3 py-2.5 border border-slate-200 rounded-xl bg-slate-50/50 text-sm focus:ring-2 focus:ring-blue-500/20 focus:border-blue-300 transition-colors"
                 />
               </div>
               <div className="w-full lg:w-auto">
-                <label className="text-sm font-medium">End Date</label>
+                <label className="text-xs font-medium text-slate-500 uppercase tracking-wide">End Date</label>
                 <input
                   type="date"
                   value={endDate}
                   onChange={(e) => setEndDate(e.target.value)}
-                  className="block w-full mt-1 px-3 py-2 border rounded-md"
+                  className="block w-full mt-1 px-3 py-2.5 border border-slate-200 rounded-xl bg-slate-50/50 text-sm focus:ring-2 focus:ring-blue-500/20 focus:border-blue-300 transition-colors"
                 />
               </div>
               <div className="flex flex-col sm:flex-row gap-2 w-full lg:w-auto">
-                <Button onClick={() => refetch()} className="w-full sm:w-auto">
+                <Button onClick={() => refetch()} className="w-full sm:w-auto bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 shadow-md shadow-blue-500/20">
                   Generate
                 </Button>
                 {data && (
                   <>
-                    <Button
-                      variant="outline"
-                      onClick={exportToPDF}
-                      className="w-full sm:w-auto"
-                    >
+                    <Button variant="outline" onClick={exportToPDF} className="w-full sm:w-auto">
                       <Download className="h-4 w-4 mr-2" />
                       PDF
                     </Button>
-                    <Button
-                      variant="outline"
-                      onClick={exportToExcel}
-                      className="w-full sm:w-auto"
-                    >
+                    <Button variant="outline" onClick={exportToExcel} className="w-full sm:w-auto">
                       <FileSpreadsheet className="h-4 w-4 mr-2" />
                       Excel
                     </Button>
@@ -220,57 +209,70 @@ export default function ReportsPage() {
           </CardContent>
         </Card>
 
-        {isLoading && <div className="text-center py-8">Loading report...</div>}
+        {isLoading && (
+          <div className="grid gap-3 md:grid-cols-3">
+            {[...Array(3)].map((_, i) => (
+              <Card key={i} className="border-0 shadow-sm">
+                <CardContent className="p-5">
+                  <div className="skeleton-shimmer h-3 w-20 rounded mb-3" />
+                  <div className="skeleton-shimmer h-7 w-32 rounded" />
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        )}
 
         {data && (
           <>
-            <div className="grid gap-4 md:grid-cols-3">
-              <Card>
-                <CardHeader>
-                  <CardTitle className="text-sm font-medium">Net Earnings</CardTitle>
+            <div className="grid gap-3 md:grid-cols-3">
+              <Card className="border-0 shadow-sm card-hover overflow-hidden relative">
+                <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-emerald-400 to-emerald-500" />
+                <CardHeader className="pb-1">
+                  <CardTitle className="text-xs font-medium text-slate-500 uppercase tracking-wide">Net Earnings</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-2xl font-bold text-green-600">
+                  <p className="text-xl lg:text-2xl font-bold text-emerald-600">
                     {formatCurrency(data.earnings.netEarnings)}
                   </p>
                 </CardContent>
               </Card>
 
-              <Card>
-                <CardHeader>
-                  <CardTitle className="text-sm font-medium">Total Expenses</CardTitle>
+              <Card className="border-0 shadow-sm card-hover overflow-hidden relative">
+                <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-red-400 to-red-500" />
+                <CardHeader className="pb-1">
+                  <CardTitle className="text-xs font-medium text-slate-500 uppercase tracking-wide">Total Expenses</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-2xl font-bold text-red-600">
+                  <p className="text-xl lg:text-2xl font-bold text-red-600">
                     {formatCurrency(data.expenses.total)}
                   </p>
                 </CardContent>
               </Card>
 
-              <Card>
-                <CardHeader>
-                  <CardTitle className="text-sm font-medium">Net Profit</CardTitle>
+              <Card className="border-0 shadow-sm card-hover overflow-hidden relative">
+                <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-blue-400 to-indigo-500" />
+                <CardHeader className="pb-1">
+                  <CardTitle className="text-xs font-medium text-slate-500 uppercase tracking-wide">Net Profit</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <p className={`text-2xl font-bold ${data.netProfit >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                  <p className={`text-xl lg:text-2xl font-bold ${data.netProfit >= 0 ? 'text-emerald-600' : 'text-red-600'}`}>
                     {formatCurrency(data.netProfit)}
                   </p>
                 </CardContent>
               </Card>
             </div>
 
-            <Card>
-              <CardHeader>
-                <CardTitle>Bookings Summary</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-lg">
-                  Total Bookings: <span className="font-bold">{data.bookingsCount}</span>
-                </p>
-                <p className="text-sm text-muted-foreground mt-2">
-                  Period: {format(new Date(startDate), 'MMM d, yyyy')} -{' '}
-                  {format(new Date(endDate), 'MMM d, yyyy')}
-                </p>
+            <Card className="border-0 shadow-sm">
+              <CardContent className="p-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm text-slate-500">Total Bookings</p>
+                    <p className="text-2xl font-bold text-slate-900">{data.bookingsCount}</p>
+                  </div>
+                  <p className="text-xs text-slate-400">
+                    {format(new Date(startDate), 'MMM d, yyyy')} - {format(new Date(endDate), 'MMM d, yyyy')}
+                  </p>
+                </div>
               </CardContent>
             </Card>
 
@@ -308,7 +310,7 @@ export default function ReportsPage() {
                 {/* Revenue Breakdown */}
                 <Card>
                   <CardHeader 
-                    className="cursor-pointer hover:bg-gray-50 transition-colors"
+                    className="cursor-pointer hover:bg-slate-50 transition-colors"
                     onClick={() => toggleSection('payments')}
                   >
                     <div className="flex items-center justify-between">
@@ -420,7 +422,7 @@ export default function ReportsPage() {
                 {/* Expenses Breakdown */}
                 <Card>
                   <CardHeader 
-                    className="cursor-pointer hover:bg-gray-50 transition-colors"
+                    className="cursor-pointer hover:bg-slate-50 transition-colors"
                     onClick={() => toggleSection('expenses')}
                   >
                     <div className="flex items-center justify-between">
@@ -494,7 +496,7 @@ export default function ReportsPage() {
                 {data.bookings && data.bookings.length > 0 && (
                   <Card>
                     <CardHeader 
-                      className="cursor-pointer hover:bg-gray-50 transition-colors"
+                      className="cursor-pointer hover:bg-slate-50 transition-colors"
                       onClick={() => toggleSection('bookings')}
                     >
                       <div className="flex items-center justify-between">
@@ -539,7 +541,7 @@ export default function ReportsPage() {
                             {data.bookings.map((booking: any, index: number) => (
                               <div
                                 key={index}
-                                className="flex flex-col lg:flex-row lg:items-center lg:justify-between p-3 border rounded-lg hover:bg-gray-50 transition-colors gap-2"
+                                className="flex flex-col lg:flex-row lg:items-center lg:justify-between p-3 border rounded-lg hover:bg-slate-50 transition-colors gap-2"
                               >
                                 <div className="flex-1">
                                   <div className="flex items-center gap-2">
@@ -579,7 +581,7 @@ export default function ReportsPage() {
                 {data.bookings && data.bookings.length > 0 && (
                   <Card>
                     <CardHeader 
-                      className="cursor-pointer hover:bg-gray-50 transition-colors"
+                      className="cursor-pointer hover:bg-slate-50 transition-colors"
                       onClick={() => toggleSection('halls')}
                     >
                       <div className="flex items-center justify-between">

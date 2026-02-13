@@ -8,7 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import ProtectedLayout from '@/components/layout/protected-layout';
-import { DollarSign, TrendingUp, TrendingDown, Calendar, ChevronLeft, ChevronRight, Eye } from 'lucide-react';
+import { DollarSign, TrendingUp, TrendingDown, Calendar, ChevronLeft, ChevronRight, Eye, ArrowRight, Sparkles } from 'lucide-react';
 
 interface DashboardData {
   period: { start: string; end: string };
@@ -50,179 +50,171 @@ export default function DashboardPage() {
 
   const getStatusColor = (status: string) => {
     const colors: Record<string, string> = {
-      INQUIRY: 'bg-gray-100 text-gray-800',
-      TENTATIVE: 'bg-yellow-100 text-yellow-800',
-      CONFIRMED: 'bg-blue-100 text-blue-800',
-      COMPLETED: 'bg-green-100 text-green-800',
-      CANCELLED: 'bg-red-100 text-red-800',
+      INQUIRY: 'bg-slate-100 text-slate-700 border border-slate-200',
+      TENTATIVE: 'bg-amber-50 text-amber-700 border border-amber-200',
+      CONFIRMED: 'bg-blue-50 text-blue-700 border border-blue-200',
+      COMPLETED: 'bg-emerald-50 text-emerald-700 border border-emerald-200',
+      CANCELLED: 'bg-red-50 text-red-700 border border-red-200',
     };
-    return colors[status] || 'bg-gray-100 text-gray-800';
+    return colors[status] || 'bg-slate-100 text-slate-700';
   };
 
-  const goToPreviousMonth = () => {
-    setCurrentMonth(subMonths(currentMonth, 1));
-  };
-
-  const goToNextMonth = () => {
-    setCurrentMonth(addMonths(currentMonth, 1));
-  };
-
-  const goToCurrentMonth = () => {
-    setCurrentMonth(new Date());
-  };
-
+  const goToPreviousMonth = () => setCurrentMonth(subMonths(currentMonth, 1));
+  const goToNextMonth = () => setCurrentMonth(addMonths(currentMonth, 1));
+  const goToCurrentMonth = () => setCurrentMonth(new Date());
   const isCurrentMonth = format(currentMonth, 'yyyy-MM') === format(new Date(), 'yyyy-MM');
 
-  // Calculate profit margin
   const profitMargin = data ? (data.earnings > 0 ? ((data.netProfit / data.earnings) * 100).toFixed(1) : 0) : 0;
-  
-  // Calculate total bookings
   const totalBookings = data ? Object.values(data.bookingsByStatus).reduce((sum, count) => sum + count, 0) : 0;
-  
-  // Calculate conversion rate (confirmed + completed / total)
   const conversionRate = data && totalBookings > 0 
     ? (((data.bookingsByStatus.CONFIRMED || 0) + (data.bookingsByStatus.COMPLETED || 0)) / totalBookings * 100).toFixed(1) 
     : 0;
 
   return (
     <ProtectedLayout>
-      <div className="space-y-6">
-        {/* Header with Month Navigation */}
-        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+      <div className="space-y-5 lg:space-y-6 animate-fade-in">
+        {/* Header */}
+        <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
           <div>
-            <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
-            <p className="text-muted-foreground">
-              Overview of business performance
-            </p>
+            <h1 className="text-2xl lg:text-3xl font-bold tracking-tight text-slate-900">Dashboard</h1>
+            <p className="text-sm text-slate-500 mt-0.5">Overview of business performance</p>
           </div>
           
-          <div className="flex items-center gap-2">
-            <Button variant="outline" size="sm" onClick={goToPreviousMonth}>
-              <ChevronLeft className="h-4 w-4" />
-            </Button>
-            <div className="text-center min-w-[140px]">
-              <p className="font-semibold">{format(currentMonth, 'MMMM yyyy')}</p>
+          <div className="flex items-center gap-1.5 bg-white border rounded-xl p-1 shadow-sm">
+            <button
+              onClick={goToPreviousMonth}
+              className="flex items-center justify-center w-9 h-9 rounded-lg hover:bg-slate-100 active:bg-slate-200 transition-colors"
+            >
+              <ChevronLeft className="h-4 w-4 text-slate-600" />
+            </button>
+            <div className="text-center min-w-[120px] px-2">
+              <p className="text-sm font-semibold text-slate-900">{format(currentMonth, 'MMMM yyyy')}</p>
               {!isCurrentMonth && (
-                <Button variant="link" size="sm" onClick={goToCurrentMonth} className="h-auto p-0 text-xs">
-                  Go to current month
-                </Button>
+                <button onClick={goToCurrentMonth} className="text-[11px] text-blue-600 hover:text-blue-700 font-medium">
+                  Current month
+                </button>
               )}
             </div>
-            <Button 
-              variant="outline" 
-              size="sm" 
+            <button
               onClick={goToNextMonth}
               disabled={isCurrentMonth}
+              className="flex items-center justify-center w-9 h-9 rounded-lg hover:bg-slate-100 active:bg-slate-200 transition-colors disabled:opacity-30"
             >
-              <ChevronRight className="h-4 w-4" />
-            </Button>
+              <ChevronRight className="h-4 w-4 text-slate-600" />
+            </button>
           </div>
         </div>
 
         {isLoading ? (
-          <div className="text-center py-12">Loading...</div>
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+            {[...Array(4)].map((_, i) => (
+              <Card key={i} className="border-0 shadow-sm">
+                <CardContent className="p-5">
+                  <div className="skeleton-shimmer h-4 w-24 rounded mb-3" />
+                  <div className="skeleton-shimmer h-8 w-32 rounded mb-2" />
+                  <div className="skeleton-shimmer h-3 w-20 rounded" />
+                </CardContent>
+              </Card>
+            ))}
+          </div>
         ) : data ? (
           <>
             {/* Stats Cards */}
-            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-              <Card className="hover:shadow-md transition-shadow">
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium">Total Earnings</CardTitle>
-                  <DollarSign className="h-4 w-4 text-green-600" />
-                </CardHeader>
-                <CardContent>
-                  <div className="text-2xl font-bold text-green-600">{formatCurrency(data.earnings)}</div>
-                  <p className="text-xs text-muted-foreground mt-1">
-                    From {totalBookings} bookings
-                  </p>
+            <div className="grid gap-3 grid-cols-2 lg:grid-cols-4">
+              <Card className="border-0 shadow-sm card-hover overflow-hidden relative">
+                <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-emerald-400 to-emerald-500" />
+                <CardContent className="p-4 lg:p-5">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-xs font-medium text-slate-500 uppercase tracking-wide">Earnings</span>
+                    <div className="w-8 h-8 rounded-lg bg-emerald-50 flex items-center justify-center">
+                      <DollarSign className="h-4 w-4 text-emerald-600" />
+                    </div>
+                  </div>
+                  <p className="text-lg lg:text-2xl font-bold text-emerald-600">{formatCurrency(data.earnings)}</p>
+                  <p className="text-[11px] text-slate-400 mt-1">{totalBookings} bookings</p>
                 </CardContent>
               </Card>
 
-              <Card className="hover:shadow-md transition-shadow">
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium">Total Expenses</CardTitle>
-                  <TrendingDown className="h-4 w-4 text-red-600" />
-                </CardHeader>
-                <CardContent>
-                  <div className="text-2xl font-bold text-red-600">{formatCurrency(data.expenses)}</div>
-                  <p className="text-xs text-muted-foreground mt-1">Operating costs</p>
+              <Card className="border-0 shadow-sm card-hover overflow-hidden relative">
+                <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-red-400 to-red-500" />
+                <CardContent className="p-4 lg:p-5">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-xs font-medium text-slate-500 uppercase tracking-wide">Expenses</span>
+                    <div className="w-8 h-8 rounded-lg bg-red-50 flex items-center justify-center">
+                      <TrendingDown className="h-4 w-4 text-red-600" />
+                    </div>
+                  </div>
+                  <p className="text-lg lg:text-2xl font-bold text-red-600">{formatCurrency(data.expenses)}</p>
+                  <p className="text-[11px] text-slate-400 mt-1">Operating costs</p>
                 </CardContent>
               </Card>
 
-              <Card className="hover:shadow-md transition-shadow">
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium">Net Profit</CardTitle>
-                  <TrendingUp className="h-4 w-4 text-muted-foreground" />
-                </CardHeader>
-                <CardContent>
-                  <div className={`text-2xl font-bold ${data.netProfit >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+              <Card className="border-0 shadow-sm card-hover overflow-hidden relative">
+                <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-blue-400 to-indigo-500" />
+                <CardContent className="p-4 lg:p-5">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-xs font-medium text-slate-500 uppercase tracking-wide">Net Profit</span>
+                    <div className="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center">
+                      <TrendingUp className="h-4 w-4 text-blue-600" />
+                    </div>
+                  </div>
+                  <p className={`text-lg lg:text-2xl font-bold ${data.netProfit >= 0 ? 'text-emerald-600' : 'text-red-600'}`}>
                     {formatCurrency(data.netProfit)}
-                  </div>
-                  <p className="text-xs text-muted-foreground mt-1">
-                    {profitMargin}% margin
                   </p>
+                  <p className="text-[11px] text-slate-400 mt-1">{profitMargin}% margin</p>
                 </CardContent>
               </Card>
 
-              <Card className="hover:shadow-md transition-shadow">
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium">Bookings</CardTitle>
-                  <Calendar className="h-4 w-4 text-blue-600" />
-                </CardHeader>
-                <CardContent>
-                  <div className="text-2xl font-bold text-blue-600">
-                    {(data.bookingsByStatus.CONFIRMED || 0) + (data.bookingsByStatus.COMPLETED || 0)}
+              <Card className="border-0 shadow-sm card-hover overflow-hidden relative">
+                <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-violet-400 to-purple-500" />
+                <CardContent className="p-4 lg:p-5">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-xs font-medium text-slate-500 uppercase tracking-wide">Confirmed</span>
+                    <div className="w-8 h-8 rounded-lg bg-violet-50 flex items-center justify-center">
+                      <Calendar className="h-4 w-4 text-violet-600" />
+                    </div>
                   </div>
-                  <p className="text-xs text-muted-foreground mt-1">
-                    {conversionRate}% conversion rate
+                  <p className="text-lg lg:text-2xl font-bold text-violet-600">
+                    {(data.bookingsByStatus.CONFIRMED || 0) + (data.bookingsByStatus.COMPLETED || 0)}
                   </p>
+                  <p className="text-[11px] text-slate-400 mt-1">{conversionRate}% conversion</p>
                 </CardContent>
               </Card>
             </div>
 
-            {/* Quick Stats */}
-            <div className="grid gap-4 md:grid-cols-3">
-              <Card>
-                <CardContent className="pt-6">
-                  <div className="text-center">
-                    <p className="text-3xl font-bold">{totalBookings}</p>
-                    <p className="text-sm text-muted-foreground mt-1">Total Bookings</p>
-                  </div>
+            {/* Quick Stats + Status Grid */}
+            <div className="grid gap-3 lg:gap-4 grid-cols-3">
+              <Card className="border-0 shadow-sm card-hover">
+                <CardContent className="p-4 lg:pt-6 text-center">
+                  <p className="text-2xl lg:text-3xl font-bold text-slate-900">{totalBookings}</p>
+                  <p className="text-xs text-slate-500 mt-1">Total Bookings</p>
                 </CardContent>
               </Card>
-              <Card>
-                <CardContent className="pt-6">
-                  <div className="text-center">
-                    <p className="text-3xl font-bold">
-                      {data.bookingsByStatus.INQUIRY || 0}
-                    </p>
-                    <p className="text-sm text-muted-foreground mt-1">Pending Inquiries</p>
-                  </div>
+              <Card className="border-0 shadow-sm card-hover">
+                <CardContent className="p-4 lg:pt-6 text-center">
+                  <p className="text-2xl lg:text-3xl font-bold text-amber-600">{data.bookingsByStatus.INQUIRY || 0}</p>
+                  <p className="text-xs text-slate-500 mt-1">Inquiries</p>
                 </CardContent>
               </Card>
-              <Card>
-                <CardContent className="pt-6">
-                  <div className="text-center">
-                    <p className="text-3xl font-bold">
-                      {data.upcomingBookings.length}
-                    </p>
-                    <p className="text-sm text-muted-foreground mt-1">Upcoming Events</p>
-                  </div>
+              <Card className="border-0 shadow-sm card-hover">
+                <CardContent className="p-4 lg:pt-6 text-center">
+                  <p className="text-2xl lg:text-3xl font-bold text-blue-600">{data.upcomingBookings.length}</p>
+                  <p className="text-xs text-slate-500 mt-1">Upcoming</p>
                 </CardContent>
               </Card>
             </div>
 
             {/* Bookings by Status */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Bookings by Status</CardTitle>
+            <Card className="border-0 shadow-sm">
+              <CardHeader className="pb-3">
+                <CardTitle className="text-base font-semibold">Bookings by Status</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2.5">
                   {Object.entries(data.bookingsByStatus).map(([status, count]) => (
-                    <div key={status} className="text-center p-4 border rounded-lg">
-                      <p className="text-3xl font-bold mb-2">{count}</p>
-                      <Badge className={getStatusColor(status)}>{status}</Badge>
+                    <div key={status} className="text-center p-3 rounded-xl bg-slate-50/80 border border-slate-100 hover:border-slate-200 transition-colors">
+                      <p className="text-2xl font-bold text-slate-900 mb-1.5">{count}</p>
+                      <Badge className={`text-[10px] font-semibold ${getStatusColor(status)}`}>{status}</Badge>
                     </div>
                   ))}
                 </div>
@@ -230,40 +222,45 @@ export default function DashboardPage() {
             </Card>
 
             {/* Upcoming Bookings */}
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between">
-                <CardTitle>Upcoming Bookings (Next 30 Days)</CardTitle>
+            <Card className="border-0 shadow-sm">
+              <CardHeader className="flex flex-row items-center justify-between pb-3">
+                <CardTitle className="text-base font-semibold">Upcoming Events</CardTitle>
                 <Link href="/calendar">
-                  <Button variant="outline" size="sm">
-                    <Eye className="w-4 h-4 mr-2" />
-                    View Calendar
+                  <Button variant="ghost" size="sm" className="text-xs text-blue-600 hover:text-blue-700 hover:bg-blue-50 gap-1">
+                    View all
+                    <ArrowRight className="w-3 h-3" />
                   </Button>
                 </Link>
               </CardHeader>
               <CardContent>
                 {data.upcomingBookings.length === 0 ? (
-                  <p className="text-sm text-muted-foreground text-center py-8">
-                    No upcoming bookings
-                  </p>
+                  <div className="text-center py-10">
+                    <Sparkles className="w-10 h-10 text-slate-200 mx-auto mb-3" />
+                    <p className="text-sm text-slate-500">No upcoming bookings</p>
+                  </div>
                 ) : (
-                  <div className="space-y-4">
-                    {data.upcomingBookings.map((booking) => (
+                  <div className="space-y-2">
+                    {data.upcomingBookings.map((booking, i) => (
                       <Link
                         key={booking.id}
                         href={`/bookings/${booking.id}`}
-                        className="flex items-center justify-between p-4 border rounded-lg hover:bg-gray-50 transition-colors"
+                        className="flex items-center justify-between p-3 rounded-xl border border-slate-100 hover:border-slate-200 hover:bg-slate-50/50 active:bg-slate-100/50 transition-all group"
+                        style={{ animationDelay: `${i * 50}ms` }}
                       >
-                        <div>
-                          <p className="font-medium">{booking.customerName}</p>
-                          <p className="text-sm text-muted-foreground">
-                            {booking.eventType} • {booking.hall}
+                        <div className="min-w-0 flex-1">
+                          <p className="font-medium text-sm text-slate-900 truncate">{booking.customerName}</p>
+                          <p className="text-xs text-slate-500 mt-0.5 truncate">
+                            {booking.eventType} &middot; {booking.hall}
                           </p>
                         </div>
-                        <div className="text-right">
-                          <p className="text-sm font-medium">
-                            {format(new Date(booking.eventDate), 'MMM d, yyyy')}
-                          </p>
-                          <Badge className={getStatusColor(booking.status)}>{booking.status}</Badge>
+                        <div className="flex items-center gap-2 ml-3 shrink-0">
+                          <div className="text-right hidden sm:block">
+                            <p className="text-xs font-medium text-slate-700">
+                              {format(new Date(booking.eventDate), 'MMM d')}
+                            </p>
+                          </div>
+                          <Badge className={`text-[10px] ${getStatusColor(booking.status)}`}>{booking.status}</Badge>
+                          <ArrowRight className="w-3.5 h-3.5 text-slate-300 group-hover:text-slate-500 transition-colors hidden lg:block" />
                         </div>
                       </Link>
                     ))}
@@ -273,8 +270,14 @@ export default function DashboardPage() {
             </Card>
           </>
         ) : (
-          <div className="text-center py-12 text-muted-foreground">
-            Failed to load dashboard data
+          <div className="text-center py-16">
+            <div className="w-12 h-12 rounded-full bg-slate-100 flex items-center justify-center mx-auto mb-3">
+              <TrendingDown className="w-5 h-5 text-slate-400" />
+            </div>
+            <p className="text-sm text-slate-500">Failed to load dashboard data</p>
+            <Button variant="outline" size="sm" className="mt-3" onClick={() => window.location.reload()}>
+              Try again
+            </Button>
           </div>
         )}
       </div>

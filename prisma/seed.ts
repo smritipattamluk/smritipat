@@ -17,7 +17,7 @@ async function main() {
     update: {},
     create: {
       id: 'default',
-      currencySymbol: '₹',
+      currencySymbol: 'Rs.',
       defaultTaxRate: 0.18,
     },
   });

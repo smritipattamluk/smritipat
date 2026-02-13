@@ -3,6 +3,7 @@ import { prisma } from '@/lib/db';
 import { requireAuth } from '@/lib/auth-utils';
 import { z } from 'zod';
 import { logger, getRequestInfo } from '@/lib/audit-logger';
+import { timeStringToDate, dateToTimeString } from '@/lib/utils';
 
 const updateBookingSchema = z.object({
   hallId: z.string().optional(),
@@ -43,7 +44,14 @@ export async function GET(
       return NextResponse.json({ error: 'Booking not found' }, { status: 404 });
     }
 
-    return NextResponse.json(booking);
+    // Serialize times properly
+    const serializedBooking = {
+      ...booking,
+      startTime: dateToTimeString(booking.startTime),
+      endTime: dateToTimeString(booking.endTime),
+    };
+
+    return NextResponse.json(serializedBooking);
   } catch (error) {
     console.error('Error fetching booking:', error);
     return NextResponse.json({ error: 'Failed to fetch booking' }, { status: 500 });
@@ -69,10 +77,10 @@ export async function PATCH(
       updateData.eventDate = new Date(validatedData.eventDate);
     }
     if (validatedData.startTime) {
-      updateData.startTime = new Date(`1970-01-01T${validatedData.startTime}:00`);
+      updateData.startTime = timeStringToDate(validatedData.startTime);
     }
     if (validatedData.endTime) {
-      updateData.endTime = new Date(`1970-01-01T${validatedData.endTime}:00`);
+      updateData.endTime = timeStringToDate(validatedData.endTime);
     }
     if (validatedData.customerEmail === '') {
       updateData.customerEmail = null;

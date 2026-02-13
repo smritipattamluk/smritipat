@@ -38,10 +38,10 @@ export default function HallsPage() {
       <div className="space-y-4 lg:space-y-6">
         <div className="flex flex-col gap-3 lg:flex-row lg:justify-between lg:items-center">
           <div>
-            <h1 className="text-2xl lg:text-3xl font-bold tracking-tight">Halls</h1>
-            <p className="text-sm lg:text-base text-muted-foreground">Manage reception halls</p>
+            <h1 className="text-2xl lg:text-3xl font-bold tracking-tight text-slate-900">Halls</h1>
+            <p className="text-sm text-slate-500 mt-0.5">Manage reception halls</p>
           </div>
-          <Button asChild className="w-full lg:w-auto">
+          <Button asChild className="w-full lg:w-auto bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 shadow-md shadow-blue-500/20">
             <Link href="/halls/new">
               <Plus className="w-4 h-4 mr-2" />
               New Hall
@@ -51,34 +51,35 @@ export default function HallsPage() {
 
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
           {isLoading ? (
-            <div className="col-span-full text-center py-8">Loading...</div>
+            <>{[...Array(3)].map((_, i) => (<div key={i} className="bg-white border border-slate-100 rounded-xl p-5"><div className="skeleton-shimmer h-5 w-32 rounded mb-3" /><div className="skeleton-shimmer h-4 w-full rounded mb-2" /><div className="skeleton-shimmer h-4 w-24 rounded" /></div>))}</>
           ) : halls && halls.length > 0 ? (
             halls.map((hall) => (
               <Link key={hall.id} href={`/halls/${hall.id}`}>
-                <Card className="cursor-pointer hover:bg-gray-50 transition-colors">
-                  <CardHeader>
+                <Card className="cursor-pointer border-0 shadow-sm hover:shadow-md hover:border-slate-200 transition-all active:scale-[0.99] overflow-hidden relative">
+                  <div className={`absolute top-0 left-0 right-0 h-1 ${hall.isActive ? 'bg-gradient-to-r from-emerald-400 to-emerald-500' : 'bg-slate-300'}`} />
+                  <CardHeader className="pb-2">
                     <div className="flex justify-between items-start">
-                      <CardTitle>{hall.name}</CardTitle>
-                      <Badge variant={hall.isActive ? 'default' : 'secondary'}>
+                      <CardTitle className="text-base">{hall.name}</CardTitle>
+                      <Badge className={hall.isActive ? 'bg-emerald-50 text-emerald-700 border border-emerald-200 text-[10px]' : 'text-[10px]'} variant={hall.isActive ? 'default' : 'secondary'}>
                         {hall.isActive ? 'Active' : 'Inactive'}
                       </Badge>
                     </div>
                   </CardHeader>
                   <CardContent>
-                    <div className="space-y-2">
+                    <div className="space-y-1.5 text-sm">
                       <div className="flex justify-between">
-                        <span className="text-sm text-muted-foreground">Floor:</span>
-                        <span className="font-medium">
+                        <span className="text-slate-500">Floor</span>
+                        <span className="font-medium text-slate-900">
                           {hall.floor === 'BOTH' ? 'Both Floors' : hall.floor === 'GROUND' ? 'Ground Floor' : hall.floor === 'FIRST' ? 'First Floor' : hall.floor}
                         </span>
                       </div>
                       <div className="flex justify-between">
-                        <span className="text-sm text-muted-foreground">Capacity:</span>
-                        <span className="font-medium">{hall.capacity} guests</span>
+                        <span className="text-slate-500">Capacity</span>
+                        <span className="font-medium text-slate-900">{hall.capacity} guests</span>
                       </div>
                       <div className="flex justify-between">
-                        <span className="text-sm text-muted-foreground">Base Rent:</span>
-                        <span className="font-medium">{formatCurrency(hall.baseRent)}</span>
+                        <span className="text-slate-500">Base Rent</span>
+                        <span className="font-semibold text-emerald-600">{formatCurrency(hall.baseRent)}</span>
                       </div>
                     </div>
                   </CardContent>

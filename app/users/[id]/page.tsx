@@ -20,7 +20,7 @@ import {
 } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
 import ProtectedLayout from '@/components/layout/protected-layout';
-import { ArrowLeft, Save, Trash2 } from 'lucide-react';
+import { ArrowLeft, Save, Trash2, Loader2 } from 'lucide-react';
 
 const userSchema = z.object({
   name: z.string().min(1, 'Name is required'),
@@ -135,8 +135,15 @@ export default function EditUserPage() {
   if (isLoading) {
     return (
       <ProtectedLayout>
-        <div className="flex items-center justify-center h-64">
-          <p className="text-muted-foreground">Loading user details...</p>
+        <div className="space-y-4 lg:space-y-6 animate-fade-in">
+          <div className="flex items-center gap-3">
+            <div className="h-9 w-9 rounded-xl bg-slate-100 animate-pulse" />
+            <div className="space-y-2">
+              <div className="h-7 w-32 bg-slate-200 rounded animate-pulse" />
+              <div className="h-4 w-24 bg-slate-100 rounded animate-pulse" />
+            </div>
+          </div>
+          <div className="rounded-xl bg-slate-50 animate-pulse h-80" />
         </div>
       </ProtectedLayout>
     );
@@ -146,9 +153,9 @@ export default function EditUserPage() {
     return (
       <ProtectedLayout>
         <div className="flex flex-col items-center justify-center h-64 space-y-4">
-          <p className="text-muted-foreground">User not found</p>
+          <p className="text-slate-500">User not found</p>
           <Link href="/users">
-            <Button>Back to Users</Button>
+            <Button className="rounded-lg">Back to Users</Button>
           </Link>
         </div>
       </ProtectedLayout>
@@ -159,15 +166,15 @@ export default function EditUserPage() {
     <ProtectedLayout>
       <div className="space-y-4 lg:space-y-6">
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-3">
             <Link href="/users">
-              <Button variant="ghost" size="icon">
+              <Button variant="ghost" size="icon" className="rounded-xl h-9 w-9 hover:bg-slate-100">
                 <ArrowLeft className="h-4 w-4" />
               </Button>
             </Link>
             <div>
-              <h1 className="text-2xl lg:text-3xl font-bold tracking-tight">Edit User</h1>
-              <p className="text-sm lg:text-base text-muted-foreground">Update user details</p>
+              <h1 className="text-2xl lg:text-3xl font-bold tracking-tight text-slate-900">Edit User</h1>
+              <p className="text-sm lg:text-base text-slate-500 mt-0.5">Update user details</p>
             </div>
           </div>
           <Button
@@ -175,6 +182,7 @@ export default function EditUserPage() {
             size="sm"
             onClick={handleDelete}
             disabled={deleteUser.isPending}
+            className="rounded-lg"
           >
             <Trash2 className="h-4 w-4 mr-2" />
             {deleteUser.isPending ? 'Deleting...' : 'Delete'}
@@ -182,9 +190,9 @@ export default function EditUserPage() {
         </div>
 
         <form onSubmit={handleSubmit(onSubmit)}>
-          <Card>
-            <CardHeader>
-              <CardTitle>User Details</CardTitle>
+          <Card className="border-0 shadow-sm">
+            <CardHeader className="pb-4">
+              <CardTitle className="text-base font-semibold">User Details</CardTitle>
             </CardHeader>
             <CardContent className="space-y-6">
               {/* Name */}
@@ -258,31 +266,39 @@ export default function EditUserPage() {
               </div>
 
               {/* Submit Buttons */}
-              <div className="flex flex-col sm:flex-row gap-3">
+              <div className="flex flex-col sm:flex-row gap-3 pt-2">
                 <Button
                   type="submit"
                   disabled={updateUser.isPending}
-                  className="flex items-center justify-center gap-2 w-full sm:w-auto"
+                  className="flex items-center justify-center gap-2 w-full sm:w-auto bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 rounded-lg h-11"
                 >
-                  <Save className="h-4 w-4" />
+                  {updateUser.isPending ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : (
+                    <Save className="h-4 w-4" />
+                  )}
                   {updateUser.isPending ? 'Saving...' : 'Save Changes'}
                 </Button>
                 <Link href="/users" className="w-full sm:w-auto">
-                  <Button type="button" variant="outline" className="w-full">
+                  <Button type="button" variant="outline" className="w-full rounded-lg h-11 border-slate-200">
                     Cancel
                   </Button>
                 </Link>
               </div>
 
               {updateUser.isError && (
-                <p className="text-sm text-red-500">
-                  {updateUser.error?.message || 'Failed to update user'}
-                </p>
+                <div className="p-3 rounded-lg bg-red-50 border border-red-200">
+                  <p className="text-sm text-red-700">
+                    {updateUser.error?.message || 'Failed to update user'}
+                  </p>
+                </div>
               )}
               {deleteUser.isError && (
-                <p className="text-sm text-red-500">
-                  {deleteUser.error?.message || 'Failed to delete user'}
-                </p>
+                <div className="p-3 rounded-lg bg-red-50 border border-red-200">
+                  <p className="text-sm text-red-700">
+                    {deleteUser.error?.message || 'Failed to delete user'}
+                  </p>
+                </div>
               )}
             </CardContent>
           </Card>

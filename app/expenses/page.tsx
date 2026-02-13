@@ -120,155 +120,138 @@ export default function ExpensesPage() {
 
   const getCategoryColor = (category: string) => {
     const colors: Record<string, string> = {
-      UTILITIES: 'bg-blue-100 text-blue-800',
-      MAINTENANCE: 'bg-orange-100 text-orange-800',
-      SALARY: 'bg-green-100 text-green-800',
-      SUPPLIES: 'bg-purple-100 text-purple-800',
-      MARKETING: 'bg-pink-100 text-pink-800',
-      OTHER: 'bg-gray-100 text-gray-800',
+      UTILITIES: 'bg-blue-50 text-blue-700 border border-blue-200',
+      MAINTENANCE: 'bg-orange-50 text-orange-700 border border-orange-200',
+      SALARY: 'bg-emerald-50 text-emerald-700 border border-emerald-200',
+      SUPPLIES: 'bg-violet-50 text-violet-700 border border-violet-200',
+      MARKETING: 'bg-pink-50 text-pink-700 border border-pink-200',
+      OTHER: 'bg-slate-100 text-slate-700 border border-slate-200',
     };
-    return colors[category] || 'bg-gray-100 text-gray-800';
+    return colors[category] || 'bg-slate-100 text-slate-700 border border-slate-200';
   };
 
   return (
     <ProtectedLayout>
-      <div className="space-y-6">
+      <div className="space-y-4 lg:space-y-5 animate-fade-in">
         <div className="flex flex-col gap-3 lg:flex-row lg:justify-between lg:items-center">
           <div>
-            <h1 className="text-2xl lg:text-3xl font-bold tracking-tight">Expenses</h1>
-            <p className="text-sm lg:text-base text-muted-foreground">
-              {filteredAndSortedExpenses.length} expenses • Total: {formatCurrency(totalExpenses)}
+            <h1 className="text-2xl lg:text-3xl font-bold tracking-tight text-slate-900">Expenses</h1>
+            <p className="text-sm text-slate-500 mt-0.5">
+              {filteredAndSortedExpenses.length} expenses &middot; Total: {formatCurrency(totalExpenses)}
             </p>
           </div>
           <Link href="/expenses/new">
-            <Button className="w-full lg:w-auto">
+            <Button className="w-full lg:w-auto bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 shadow-md shadow-blue-500/20">
               <Plus className="w-4 h-4 mr-2" />
               New Expense
             </Button>
           </Link>
         </div>
 
-        {/* Search and Filters */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-base flex items-center gap-2">
-              <Filter className="w-4 h-4" />
-              Search & Filter
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              {/* Search */}
+        {/* Filters */}
+        <Card className="border-0 shadow-sm">
+          <CardContent className="p-4 space-y-3">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
               <div className="relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
                 <Input
-                  placeholder="Search by description, category..."
+                  placeholder="Search description, category..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-9"
+                  className="pl-9 h-10 bg-slate-50/50 border-slate-200"
                 />
               </div>
 
-              {/* Category Filter */}
               <Select value={categoryFilter} onValueChange={setCategoryFilter}>
-                <SelectTrigger>
+                <SelectTrigger className="h-10 bg-slate-50/50 border-slate-200">
                   <SelectValue placeholder="All Categories" />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="ALL">All Categories</SelectItem>
                   {categories.map((category) => (
-                    <SelectItem key={category} value={category}>
-                      {category}
-                    </SelectItem>
+                    <SelectItem key={category} value={category}>{category}</SelectItem>
                   ))}
                 </SelectContent>
               </Select>
 
-              {/* Clear Filters */}
               {hasActiveFilters && (
-                <Button variant="outline" onClick={clearFilters} className="w-full">
-                  <X className="w-4 h-4 mr-2" />
-                  Clear Filters
+                <Button variant="outline" onClick={clearFilters} className="h-10 border-dashed">
+                  <X className="w-4 h-4 mr-1.5" />
+                  Clear
                 </Button>
               )}
             </div>
 
-            {/* Sort Options */}
-            <div className="flex flex-wrap gap-2">
-              <span className="text-sm text-muted-foreground self-center">Sort by:</span>
-              <Button
-                variant={sortField === 'expenseDate' ? 'default' : 'outline'}
-                size="sm"
-                onClick={() => toggleSort('expenseDate')}
-              >
-                Date
-                <ArrowUpDown className="w-3 h-3 ml-2" />
-              </Button>
-              <Button
-                variant={sortField === 'amount' ? 'default' : 'outline'}
-                size="sm"
-                onClick={() => toggleSort('amount')}
-              >
-                Amount
-                <ArrowUpDown className="w-3 h-3 ml-2" />
-              </Button>
-              <Button
-                variant={sortField === 'category' ? 'default' : 'outline'}
-                size="sm"
-                onClick={() => toggleSort('category')}
-              >
-                Category
-                <ArrowUpDown className="w-3 h-3 ml-2" />
-              </Button>
-              <Badge variant="secondary" className="self-center ml-auto">
+            <div className="flex flex-wrap gap-1.5 items-center">
+              <span className="text-xs text-slate-400 mr-1">Sort:</span>
+              {(['expenseDate', 'amount', 'category'] as SortField[]).map((field) => (
+                <button
+                  key={field}
+                  onClick={() => toggleSort(field)}
+                  className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-medium transition-colors ${
+                    sortField === field
+                      ? 'bg-blue-50 text-blue-700 border border-blue-200'
+                      : 'bg-slate-50 text-slate-600 border border-slate-200 hover:bg-slate-100'
+                  }`}
+                >
+                  {field === 'expenseDate' ? 'Date' : field === 'amount' ? 'Amount' : 'Category'}
+                  <ArrowUpDown className="w-3 h-3" />
+                </button>
+              ))}
+              <span className="text-[11px] text-slate-400 ml-auto">
                 {sortOrder === 'asc' ? '↑ Ascending' : '↓ Descending'}
-              </Badge>
+              </span>
             </div>
           </CardContent>
         </Card>
 
         {/* Expenses List */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Recent Expenses</CardTitle>
-          </CardHeader>
-          <CardContent>
-            {isLoading ? (
-              <div className="text-center py-8">Loading...</div>
-            ) : filteredAndSortedExpenses.length > 0 ? (
-              <div className="space-y-4">
-                {filteredAndSortedExpenses.map((expense) => (
-                  <div
-                    key={expense.id}
-                    className="flex flex-col lg:flex-row lg:items-center lg:justify-between p-4 border rounded-lg hover:bg-gray-50 transition-colors gap-2"
-                  >
-                    <div className="flex-1">
-                      <div className="flex items-center gap-2 mb-1">
-                        <p className="font-medium">{expense.description}</p>
-                        <Badge className={getCategoryColor(expense.category)}>{expense.category}</Badge>
-                      </div>
-                      <p className="text-sm text-muted-foreground">
-                        Added by {expense.createdBy.name}
-                      </p>
-                    </div>
-                    <div className="flex items-center justify-between lg:flex-col lg:text-right gap-2">
-                      <p className="text-lg font-semibold">{formatCurrency(expense.amount)}</p>
-                      <p className="text-sm text-muted-foreground">
-                        {format(new Date(expense.expenseDate), 'MMM d, yyyy')}
-                      </p>
-                    </div>
+        {isLoading ? (
+          <div className="space-y-3">
+            {[...Array(5)].map((_, i) => (
+              <div key={i} className="p-4 bg-white border border-slate-100 rounded-xl">
+                <div className="flex items-center justify-between">
+                  <div className="space-y-2 flex-1">
+                    <div className="skeleton-shimmer h-4 w-48 rounded" />
+                    <div className="skeleton-shimmer h-3 w-32 rounded" />
                   </div>
-                ))}
+                  <div className="skeleton-shimmer h-6 w-24 rounded" />
+                </div>
               </div>
-            ) : (
-              <div className="text-center py-8 text-muted-foreground">
-                {expenses && expenses.length > 0
-                  ? 'No expenses match your filters.'
-                  : 'No expenses recorded yet.'}
+            ))}
+          </div>
+        ) : filteredAndSortedExpenses.length > 0 ? (
+          <div className="space-y-2">
+            {filteredAndSortedExpenses.map((expense, i) => (
+              <div
+                key={expense.id}
+                className="flex flex-col sm:flex-row sm:items-center justify-between p-3.5 lg:p-4 bg-white border border-slate-100 rounded-xl hover:border-slate-200 hover:shadow-sm transition-all"
+                style={{ animationDelay: `${i * 30}ms` }}
+              >
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2 mb-0.5">
+                    <p className="font-medium text-sm text-slate-900 truncate">{expense.description}</p>
+                    <Badge className={`text-[10px] font-semibold shrink-0 ${getCategoryColor(expense.category)}`}>{expense.category}</Badge>
+                  </div>
+                  <p className="text-xs text-slate-500">Added by {expense.createdBy.name}</p>
+                </div>
+                <div className="flex items-center justify-between sm:justify-end gap-3 mt-2 sm:mt-0 sm:ml-4">
+                  <p className="text-base font-semibold text-slate-900">{formatCurrency(expense.amount)}</p>
+                  <p className="text-xs text-slate-400">
+                    {format(new Date(expense.expenseDate), 'MMM d, yyyy')}
+                  </p>
+                </div>
               </div>
-            )}
-          </CardContent>
-        </Card>
+            ))}
+          </div>
+        ) : (
+          <div className="text-center py-16 bg-white border border-slate-100 rounded-xl">
+            <DollarSign className="w-10 h-10 text-slate-200 mx-auto mb-3" />
+            <p className="text-sm text-slate-500">
+              {expenses && expenses.length > 0 ? 'No expenses match your filters.' : 'No expenses recorded yet.'}
+            </p>
+          </div>
+        )}
       </div>
     </ProtectedLayout>
   );

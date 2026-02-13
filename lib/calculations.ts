@@ -90,7 +90,7 @@ export function calculateBookingTotals(
 /**
  * Format currency with symbol
  */
-export function formatCurrency(amount: number | any, symbol: string = '₹'): string {
+export function formatCurrency(amount: number | any, symbol: string = 'Rs.'): string {
   const num = Number(amount);
   return `${symbol}${num.toLocaleString('en-IN', {
     minimumFractionDigits: 2,
