@@ -134,7 +134,7 @@ export async function POST(request: NextRequest) {
         eventDate,
         startTime,
         endTime,
-        status: validatedData.status || 'INQUIRY',
+        status: validatedData.status || 'CONFIRMED',
         baseRent: validatedData.baseRent,
         discountAmount: validatedData.discountAmount || 0,
         taxRate: validatedData.taxRate || 0,

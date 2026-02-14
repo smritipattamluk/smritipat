@@ -62,7 +62,7 @@ export default function NewBookingPage() {
   } = useForm<BookingFormData>({
     resolver: zodResolver(bookingSchema),
     defaultValues: {
-      status: 'INQUIRY',
+      status: 'CONFIRMED',
       baseRent: 0,
       startTime: '10:00',
       endTime: '22:00',
@@ -250,7 +250,7 @@ export default function NewBookingPage() {
                 <div className="space-y-2">
                   <Label>Status</Label>
                   <Select
-                    defaultValue="INQUIRY"
+                    defaultValue="CONFIRMED"
                     onValueChange={(value) =>
                       setValue('status', value as BookingFormData['status'])
                     }
